@@ -19,6 +19,7 @@ export interface RegisterInput {
 export interface LoginInput {
     email: string
     password: string
+    remember?: boolean
 }
 
 export interface Category {
@@ -33,7 +34,7 @@ export interface Category {
     transactionsCount: number
 }
 
-export enum TrasactionType {
+export enum TransactionType {
     CREDIT = "credit",
     DEBIT = "debit"
 }
@@ -42,7 +43,7 @@ export interface Transaction {
     id: string
     userId: string
     description: string
-    transactionType: TrasactionType.CREDIT | TrasactionType.DEBIT
+    transactionType: TransactionType.CREDIT | TransactionType.DEBIT
     date: string
     value: number
     categoryId: string

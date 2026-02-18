@@ -43,7 +43,8 @@ export const useAuthStore = create<AuthState>() (
                         variables: {
                             data: {
                                 email: loginData.email,
-                                password: loginData.password
+                                password: loginData.password,
+                                remember: loginData.remember
                             }
                         }
                     })
@@ -61,6 +62,10 @@ export const useAuthStore = create<AuthState>() (
                             token,
                             isAuthenticated: true
                         })
+                        if (loginData.remember) {
+                            localStorage.setItem('token', token)
+                            localStorage.setItem('user', JSON.stringify(user))
+                        }
                         return true
                     }
                     return false
@@ -111,6 +116,8 @@ export const useAuthStore = create<AuthState>() (
                     token: null,
                     isAuthenticated: false
                 })
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
                 apolloClient.clearStore()
             },
         }),

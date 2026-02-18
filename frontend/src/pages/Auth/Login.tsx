@@ -1,5 +1,14 @@
 import { useState } from "react"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useAuthStore } from "@/stores/auth"
+import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
+import { toast } from "sonner"
+import { z } from "zod"
+
 import logo from "@/assets/logo.svg"
+import { LucideMail, LucideLock, UserPlus2, Eye, EyeOff } from "lucide-react"
+
 import {
     Card,
     CardContent,
@@ -7,38 +16,52 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
-import { useAuthStore } from "@/stores/auth"
-import { toast } from "sonner"
-import { Field, FieldGroup, FieldLabel, FieldSeparator, FieldSet } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LucideMail, LucideLock, UserPlus2, Eye, EyeOff } from "lucide-react"
-import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
+import { Button } from "@/components/ui/button"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group.tsx";
+
+const loginValidationSchema = z.object({
+    email: z.email({ message: 'Email inválido' }),
+    password: z.string().min(8, { message: 'Senha inválida' }),
+    remember: z.boolean(),
+})
+
+type LoginFormData = z.infer<typeof loginValidationSchema>
 
 export function Login() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [rememberMe, setRememberMe] = useState(false)
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginValidationSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+            remember: false,
+        },
+    })
+
     const [visiblePassword, setVisiblePassword] = useState(false)
     const [loading, setLoading] = useState(false)
+
     const login = useAuthStore((state) => state.login)
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-
+    const loginSubmit = async (formData: LoginFormData) => {
         try {
+            setLoading(true)
             const loginMutate = await login({
-                email,
-                password,
+                email: formData.email,
+                password: formData.password,
+                remember: formData.remember
             })
             if (loginMutate) {
                 toast.success("Login realizado com sucesso!")
             }
         } catch (error) {
-            console.log(error)
-            toast.success("Falha ao realizar o login!")
+            console.error(error)
+            toast.error("Falha ao realizar o login!")
         } finally {
             setLoading(false)
         }
@@ -57,7 +80,7 @@ export function Login() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit(loginSubmit)} className="space-y-4">
                         <FieldGroup>
                             <FieldSet>
                                 <FieldGroup className="flex flex-col gap-4">
@@ -73,12 +96,13 @@ export function Login() {
                                                 id="email"
                                                 type="email"
                                                 placeholder="mail@example.com"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                required
+                                                {...register('email', { required: true })}
                                                 className="px-3 py-3.5 text-gray-500"
                                             />
                                         </InputGroup>
+                                        <FieldError>
+                                            {errors?.email && <span>{errors.email.message}</span>}
+                                        </FieldError>
                                     </Field>
                                     <Field className="gap-2">
                                         <FieldLabel htmlFor="password" className="text-sm text-gray-700">
@@ -92,9 +116,7 @@ export function Login() {
                                                 id="password"
                                                 type={ visiblePassword ? "text" : "password" }
                                                 placeholder="Digite sua senha"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                required
+                                                {...register('password', { required: true })}
                                                 className="px-3 py-3.5 text-gray-500"
                                             />
                                             <InputGroupAddon align="inline-end">
@@ -105,11 +127,18 @@ export function Login() {
                                                 )}
                                             </InputGroupAddon>
                                         </InputGroup>
+                                        <FieldError>
+                                            {errors?.password && <span>{errors.password.message}</span>}
+                                        </FieldError>
                                     </Field>
                                     <Field orientation="horizontal" className="flex flex-row content-between w-full">
                                         <FieldGroup>
                                             <Field orientation="horizontal">
-                                                <Checkbox id="rememberMe" checked={rememberMe} className="w-4 h-4 border-gray-500" aria-label="Lembrar-me" onChange={() => setRememberMe(!rememberMe)} />
+                                                <Checkbox
+                                                    id="rememberMe"
+                                                    {...register('remember')}
+                                                    className="w-4 h-4 border-gray-500" aria-label="Lembrar-me"
+                                                />
                                                 <FieldLabel htmlFor="rememberMe" className="text-gray-500">
                                                     Lembrar-me
                                                 </FieldLabel>

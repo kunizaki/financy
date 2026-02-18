@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button.tsx";
 import { ArrowDownCircle, ArrowLeftSquare, ArrowRightSquare, ArrowUpCircle, Plus, Search, SquarePenIcon, Trash2} from "lucide-react"
 import {Card} from "@/components/ui/card.tsx";
 import {DynamicIcon} from "lucide-react/dynamic";
-import {Transaction, TrasactionType} from "@/types";
+import {Transaction, TransactionType} from "@/types";
 import {useCallback, useEffect, useState} from "react";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
@@ -47,7 +47,7 @@ export function Transactions() {
                     id: '1',
                     userId: '1',
                     description: 'Recebimento de Salário',
-                    transactionType: TrasactionType.CREDIT,
+                    transactionType: TransactionType.CREDIT,
                     date: '2026-02-08T12:00:00.000Z',
                     value: 9000.00,
                     categoryId: '1',
@@ -66,7 +66,7 @@ export function Transactions() {
                     id: '2',
                     userId: '1',
                     description: 'Compra de alimentos',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-10T12:00:00.000Z',
                     value: 1000.00,
                     categoryId: '1',
@@ -85,7 +85,7 @@ export function Transactions() {
                     id: '3',
                     userId: '1',
                     description: 'Plano de Saúde',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-10T12:00:00.000Z',
                     value: 500.00,
                     categoryId: '3',
@@ -104,7 +104,7 @@ export function Transactions() {
                     id: '4',
                     userId: '1',
                     description: 'Lanchonete',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-11T12:00:00.000Z',
                     value: 200.00,
                     categoryId: '1',
@@ -136,7 +136,7 @@ export function Transactions() {
             transactionsFiltered = transactionsFiltered.filter((transaction) => transaction.description.toLowerCase().includes(searchByDescription.toLowerCase()))
         }
         if (searchByTransactionType !== 'all') {
-            transactionsFiltered = transactionsFiltered.filter((transaction) => transaction.transactionType === searchByTransactionType as TrasactionType)
+            transactionsFiltered = transactionsFiltered.filter((transaction) => transaction.transactionType === searchByTransactionType as TransactionType)
         }
         if (searchByCategory !== 'all') {
             transactionsFiltered = transactionsFiltered.filter((transaction) => transaction.category.title === searchByCategory)
@@ -264,19 +264,19 @@ export function Transactions() {
                                 </div>
                             </TableCell>
                             <TableCell className="flex justify-center text-xs text-gray-800 w-2/12 xl:w-1/12 text-center">
-                                    {transaction.transactionType === TrasactionType.CREDIT ? (
-                                        <div className="flex flex-row items-center gap-2 w-fit">
-                                            <ArrowUpCircle className="w-4 h-4 text-green-800" />
-                                            <span className="text-xs text-green-800">Entrada</span>
-                                        </div>
-                                    ):(
-                                        <div className="flex flex-row items-center gap-2 w-fit">
-                                            <ArrowDownCircle className="w-4 h-4 text-red-700" />
-                                            <span className="text-xs text-red-700">Saída</span>
-                                        </div>
-                                    )}
+                                {transaction.transactionType === TransactionType.CREDIT ? (
+                                    <div className="flex flex-row items-center gap-2 w-fit">
+                                        <ArrowUpCircle className="w-4 h-4 text-green-800" />
+                                        <span className="text-xs text-green-800">Entrada</span>
+                                    </div>
+                                ):(
+                                    <div className="flex flex-row items-center gap-2 w-fit">
+                                        <ArrowDownCircle className="w-4 h-4 text-red-700" />
+                                        <span className="text-xs text-red-700">Saída</span>
+                                    </div>
+                                )}
                             </TableCell>
-                            <TableCell className="text-xs text-gray-800 w-2/12 xl:w-1/12 text-end text-nowrap">{transaction.transactionType === TrasactionType.CREDIT ? '+' : '-'} {transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
+                            <TableCell className="text-xs text-gray-800 w-2/12 xl:w-1/12 text-end text-nowrap">{transaction.transactionType === TransactionType.CREDIT ? '+' : '-'} {transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                             <TableCell className="w-2/12 xl:w-1/12">
                                 <div className="flex flex-row justify-end gap-2">
                                     <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300">

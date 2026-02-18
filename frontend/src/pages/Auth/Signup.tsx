@@ -1,4 +1,9 @@
 import { useState } from "react"
+
+import {z} from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import logo from "@/assets/logo.svg"
 import {
     Card,
@@ -11,33 +16,91 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { useAuthStore } from "@/stores/auth"
 import { toast } from "sonner"
-import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator, FieldSet} from "@/components/ui/field";
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+    FieldSeparator,
+    FieldSet
+} from "@/components/ui/field";
 import {Eye, EyeOff, LucideLock, LucideLogIn, LucideMail, User2} from "lucide-react"
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
 
+const handleUserName = (nameInput: string) => {
+    const nameLowerCase = nameInput.toLowerCase()
+    const nameFormated = nameLowerCase
+        .split(' ')
+        .map((word) => {
+            if (/^[a-zA-ZÀ-ÿ]/.test(word)) {
+                return word.charAt(0).toUpperCase() + word.slice(1)
+            }
+            return word
+        })
+        .join(' ')
+    const prepositionsTarget = ['Da', 'De', 'Do', 'Das', 'Dos']
+    return nameFormated
+        .split(' ')
+        .map((word: string) => {
+            if (prepositionsTarget.includes(word)) {
+                return word.toLowerCase()
+            }
+            return word
+        })
+        .join(' ')
+}
+
+const registerValidationSchema = z.object({
+    name: z.string().min(10, { message: 'Nome precisa possuir pelo menos 10 caracteres' }),
+    email: z.email({ message: 'Email inválido' }),
+    password: z.string().min(8, { message: 'Senha precisa possuir pelo menos 8 caracteres' }),
+    confirmPassword: z.string().min(8, { message: 'Senha precisa possuir pelo menos 8 caracteres' }),
+}).refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'As senhas não são iguais',
+})
+    .transform((data) => ({
+        ...data,
+        name: handleUserName(data.name.trim()),
+        email: data.email.toLowerCase().trim(),
+    }))
+
+type RegisterFormData = z.infer<typeof registerValidationSchema>
+
 export function Signup() {
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerValidationSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            password: "",
+        }
+    })
+
     const [visiblePassword, setVisiblePassword] = useState(false)
     const [loading, setLoading] = useState(false)
-    const login = useAuthStore((state) => state.login)
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
+    const registerUser = useAuthStore((state) => state.signup)
 
+    const registerSubmit = async (formData: RegisterFormData) => {
         try {
-            const loginMutate = await login({
-                email,
-                password,
+            setLoading(true)
+            const registerMutate = await registerUser({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
             })
-            if (loginMutate) {
-                toast.success("Login realizado com sucesso!")
+            if (registerMutate) {
+                toast.success("Registro realizado com sucesso!")
             }
         } catch (error) {
-            console.log(error)
-            toast.success("Falha ao realizar o login!")
+            console.error(error)
+            toast.success("Falha ao realizar o registro!")
         } finally {
             setLoading(false)
         }
@@ -56,7 +119,7 @@ export function Signup() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit(registerSubmit)} className="space-y-4">
                         <FieldGroup>
                             <FieldSet>
                                 <FieldGroup className="flex flex-col gap-4">
@@ -72,12 +135,13 @@ export function Signup() {
                                                 id="name"
                                                 type="name"
                                                 placeholder="Seu nome completo"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                                required
+                                                {...register('name', { required: true })}
                                                 className="px-3 py-3.5 text-gray-500"
                                             />
                                         </InputGroup>
+                                        <FieldError>
+                                            {errors?.name && <span>{errors.name.message}</span> }
+                                        </FieldError>
                                     </Field>
                                     <Field className="gap-2">
                                         <FieldLabel htmlFor="email" className="text-sm text-gray-700">
@@ -91,12 +155,14 @@ export function Signup() {
                                                 id="email"
                                                 type="email"
                                                 placeholder="mail@example.com"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
+                                                {...register('email', { required: true })}
                                                 required
                                                 className="px-3 py-3.5 text-gray-500"
                                             />
                                         </InputGroup>
+                                        <FieldError>
+                                            {errors?.email && <span>{errors.email.message}</span>}
+                                        </FieldError>
                                     </Field>
                                     <Field className="gap-2">
                                         <FieldLabel htmlFor="password" className="text-sm text-gray-700">
@@ -110,8 +176,7 @@ export function Signup() {
                                                 id="password"
                                                 type={ visiblePassword ? "text" : "password" }
                                                 placeholder="Digite sua senha"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
+                                                {...register('password', { required: true })}
                                                 required
                                                 className="px-3 py-3.5 text-gray-500"
                                             />
@@ -124,6 +189,38 @@ export function Signup() {
                                             </InputGroupAddon>
                                         </InputGroup>
                                         <FieldDescription className="text-gray-500 text-xs">A senha deve ter no mínimo 8 caracteres</FieldDescription>
+                                        <FieldError>
+                                            {errors?.password && <span>{errors.password.message}</span>}
+                                        </FieldError>
+                                    </Field>
+                                    <Field className="gap-2">
+                                        <FieldLabel htmlFor="confirmPassword" className="text-sm text-gray-700">
+                                            Senha
+                                        </FieldLabel>
+                                        <InputGroup className="px-3 py-3.5 rounded-[8px] border-gray-300 ">
+                                            <InputGroupAddon>
+                                                <LucideLock className="text-gray-500" />
+                                            </InputGroupAddon>
+                                            <InputGroupInput
+                                                id="password"
+                                                type={ visiblePassword ? "text" : "password" }
+                                                placeholder="Confirme sua senha"
+                                                {...register('confirmPassword', { required: true })}
+                                                required
+                                                className="px-3 py-3.5 text-gray-500"
+                                            />
+                                            <InputGroupAddon align="inline-end">
+                                                {visiblePassword ? (
+                                                    <Eye className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(false)} />
+                                                ) : (
+                                                    <EyeOff className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(true)} />
+                                                )}
+                                            </InputGroupAddon>
+                                        </InputGroup>
+                                        <FieldDescription className="text-gray-500 text-xs">A senha deve ter no mínimo 8 caracteres</FieldDescription>
+                                        <FieldError>
+                                            {errors?.password && <span>{errors.password.message}</span>}
+                                        </FieldError>
                                     </Field>
                                     <Button type="submit" className="w-full h-12 py-3 px-3.5 rounded-[8px] text-white bg-[#1F6F43] hover:bg-[#1a5f3a]" disabled={loading}>
                                         Cadastrar

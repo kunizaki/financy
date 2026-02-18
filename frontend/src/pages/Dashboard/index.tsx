@@ -1,7 +1,7 @@
 import {ArrowDownCircle, ArrowUpCircle, ChevronRight, Wallet} from "lucide-react"
 import {Card} from "@/components/ui/card.tsx";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {Transaction, TrasactionType} from "@/types";
+import {Transaction, TransactionType} from "@/types";
 import {DynamicIcon} from "lucide-react/dynamic";
 
 import dayjs from 'dayjs'
@@ -36,7 +36,7 @@ export function Dashboard() {
                     id: '1',
                     userId: '1',
                     description: 'Recebimento de Salário',
-                    transactionType: TrasactionType.CREDIT,
+                    transactionType: TransactionType.CREDIT,
                     date: '2026-02-08T12:00:00.000Z',
                     value: 9000.00,
                     categoryId: '1',
@@ -55,7 +55,7 @@ export function Dashboard() {
                     id: '2',
                     userId: '1',
                     description: 'Compra de alimentos',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-10T12:00:00.000Z',
                     value: 1000.00,
                     categoryId: '1',
@@ -74,7 +74,7 @@ export function Dashboard() {
                     id: '3',
                     userId: '1',
                     description: 'Plano de Saúde',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-10T12:00:00.000Z',
                     value: 500.00,
                     categoryId: '3',
@@ -93,7 +93,7 @@ export function Dashboard() {
                     id: '4',
                     userId: '1',
                     description: 'Lanchonete',
-                    transactionType: TrasactionType.DEBIT,
+                    transactionType: TransactionType.DEBIT,
                     date: '2026-02-11T12:00:00.000Z',
                     value: 200.00,
                     categoryId: '1',
@@ -124,32 +124,32 @@ export function Dashboard() {
     useMemo(() => {
         const calculatedCategoriesFromTransactions = Array.from(
             lastTransactions
-              .filter((t) => t.transactionType !== TrasactionType.CREDIT)
-              .reduce((map, transaction) => {
-                const categoryId = transaction.category.id
-  
-                const current = map.get(categoryId)
-                if (!current) {
-                  map.set(categoryId, {
-                    title: transaction.category.title,
-                    totalAmount: transaction.value,
-                    color: transaction.category.color,
-                    transactionsCount: 1,
-                  })
-                } else {
-                  map.set(categoryId, {
-                    ...current,
-                    totalAmount: current.totalAmount + transaction.value,
-                    transactionsCount: current.transactionsCount + 1,
-                  })
-                }
-  
-                return map
-              }, new Map<string, { title: string; totalAmount: number; color: string; transactionsCount: number }>())
-              .values()
-          )
-  
-          setCategoriesFromTransactions(calculatedCategoriesFromTransactions)
+                .filter((t) => t.transactionType !== TransactionType.CREDIT)
+                .reduce((map, transaction) => {
+                    const categoryId = transaction.category.id
+
+                    const current = map.get(categoryId)
+                    if (!current) {
+                        map.set(categoryId, {
+                            title: transaction.category.title,
+                            totalAmount: transaction.value,
+                            color: transaction.category.color,
+                            transactionsCount: 1,
+                        })
+                    } else {
+                        map.set(categoryId, {
+                            ...current,
+                            totalAmount: current.totalAmount + transaction.value,
+                            transactionsCount: current.transactionsCount + 1,
+                        })
+                    }
+
+                    return map
+                }, new Map<string, { title: string; totalAmount: number; color: string; transactionsCount: number }>())
+                .values()
+        )
+
+        setCategoriesFromTransactions(calculatedCategoriesFromTransactions)
     }, [lastTransactions])
 
     const getTotalBalance = useCallback(async () => {
@@ -212,10 +212,10 @@ export function Dashboard() {
                                     </div>
                                 </div>
                                 <div className="w-40 text-end">
-                                    <span className="text-lg text-gray-800 font-bold text-nowrap">{transaction.transactionType === TrasactionType.CREDIT ? "+ " : "- "}{transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                    <span className="text-lg text-gray-800 font-bold text-nowrap">{transaction.transactionType === TransactionType.CREDIT ? "+ " : "- "}{transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                                 </div>
                                 <div className="flex w-fit items-center">
-                                    <DynamicIcon name={transaction.transactionType === TrasactionType.CREDIT ? 'circle-arrow-up' : 'circle-arrow-down'} color={transaction.transactionType === TrasactionType.CREDIT ? 'green' : 'red'} size={20} />
+                                    <DynamicIcon name={transaction.transactionType === TransactionType.CREDIT ? 'circle-arrow-up' : 'circle-arrow-down'} color={transaction.transactionType === TransactionType.CREDIT ? 'green' : 'red'} size={20} />
                                 </div>
                             </div>
                         </div>
