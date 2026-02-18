@@ -11,7 +11,9 @@ type CategoryModel {
   id: ID!
   title: String!
   transactions: [TransactionModel!]
+  transactionsCount: Float!
   updatedAt: DateTimeISO!
+  userId: String!
 }
 
 input CreateCategoryInput {
@@ -19,6 +21,7 @@ input CreateCategoryInput {
   description: String
   icon: String!
   title: String!
+  userId: String!
 }
 
 input CreateTransactionInput {
@@ -26,6 +29,7 @@ input CreateTransactionInput {
   date: String!
   description: String!
   transactionType: TransactionType!
+  userId: String!
   value: Float!
 }
 
@@ -39,6 +43,7 @@ input ListTransactionInput {
   description: String
   period: String
   transactionType: TransactionType
+  userId: String!
 }
 
 input LoginInput {
@@ -103,6 +108,7 @@ type TransactionModel {
   transactionType: TransactionType!
   transactionsCount: Float!
   updatedAt: DateTimeISO!
+  userId: String!
   value: Float!
 }
 
@@ -117,6 +123,7 @@ input UpdateCategoryInput {
   description: String
   icon: String!
   title: String!
+  userId: String!
 }
 
 input UpdateTransactionInput {
@@ -124,6 +131,7 @@ input UpdateTransactionInput {
   date: String!
   description: String!
   transactionType: TransactionType!
+  userId: String!
   value: Float!
 }
 

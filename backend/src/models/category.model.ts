@@ -7,6 +7,9 @@ export class CategoryModel {
   id!: string
 
   @Field(() => String)
+  userId?: string
+
+  @Field(() => String)
   title!: string
 
   @Field(() => String, { nullable: true })
@@ -23,6 +26,9 @@ export class CategoryModel {
 
   @Field(() => GraphQLISODateTime)
   updatedAt!: Date
+
+  @Field(() => Number)
+  transactionsCount?: number
 
   @Field(() => [TransactionModel], { nullable: true })
   transactions?: TransactionModel[]

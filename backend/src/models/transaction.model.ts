@@ -20,6 +20,9 @@ export class TransactionModel {
   @Field(() => ID)
   id!: string
 
+  @Field(() => String)
+  userId!: string
+
   @Field(() => String, { nullable: true })
   description!: string
 
