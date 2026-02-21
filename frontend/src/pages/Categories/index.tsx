@@ -15,9 +15,15 @@ import {Button} from "@/components/ui/button.tsx";
 import {Card} from "@/components/ui/card.tsx";
 
 import {CreateCategoryDialog} from "@/pages/Categories/components/CreateCategoryDialog.tsx";
+import {DeleteCategoryDialog} from "@/pages/Categories/components/DeleteCategoryDialog.tsx";
+import {EditCategoryDialog} from "@/pages/Categories/components/EditCategoryDialog.tsx";
 
 export function Categories() {
     const [openDialog, setOpenDialog] = useState(false)
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+    const [openEditDialog, setOpenEditDialog] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+
     const { data, loading, refetch } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
 
     const categories = data?.listCategories || []
@@ -33,6 +39,28 @@ export function Categories() {
         }
         return null
     }, [categories])
+
+    const openDeleteDialogByCategory = (category: Category) => {
+        setSelectedCategory(category)
+        setOpenDeleteDialog(true)
+    }
+
+    const closeDeleteDialog = () => {
+        setOpenDeleteDialog(false)
+        setSelectedCategory(null)
+        refetch()
+    }
+
+    const openEditDialogByCategory = (category: Category) => {
+        setSelectedCategory(category)
+        setOpenEditDialog(true)
+    }
+
+    const closeEditDialog = () => {
+        setOpenEditDialog(false)
+        setSelectedCategory(null)
+        refetch()
+    }
 
     return (
         <>
@@ -97,10 +125,15 @@ export function Categories() {
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-2">
-                                        <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300">
+                                        <Button
+                                            variant="outline"
+                                            className="w-8 h-8 p-2 rounded-[8px] border-gray-300"
+                                            onClick={() => openDeleteDialogByCategory(category)}
+                                            disabled={category.transactionsCount > 0}
+                                        >
                                             <Trash2 className="w-4 h-4 text-red-500" />
                                         </Button>
-                                        <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300">
+                                        <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300" onClick={() => openEditDialogByCategory(category)}>
                                             <SquarePenIcon className="w-4 h-4" />
                                         </Button>
                                     </div>
@@ -125,7 +158,19 @@ export function Categories() {
                     </div>
                 </div>
             )}
+
             <CreateCategoryDialog open={openDialog} onOpenChange={setOpenDialog} onCreated={() => refetch()} />
+
+            {selectedCategory && (
+                <EditCategoryDialog
+                    open={openEditDialog}
+                    onOpenChange={setOpenEditDialog}
+                    category={selectedCategory}
+                    onUpdated={() => closeEditDialog()}
+                />
+            )}
+
+            <DeleteCategoryDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog} category={selectedCategory} onDeleted={() => closeDeleteDialog()}  />
         </>
     )
 }
