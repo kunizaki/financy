@@ -1,16 +1,16 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import { Layout } from "@/components/Layout"
-import { Login } from "./pages/Auth/Login"
-import { Signup } from "./pages/Auth/Signup"
 import { useAuthStore } from "./stores/auth"
-import {Categories} from "@/pages/System/Categories.tsx";
-import {Dashboard} from "@/pages/System/Dashboard.tsx";
-import {Transactions} from "@/pages/System/Transactions.tsx";
+import { Layout } from "@/components/Layout"
+import { Login } from "@/pages/Auth/Login"
+import { Signup } from "@/pages/Auth/Signup"
+import { Categories } from "@/pages/Categories";
+import { Dashboard } from "@/pages/Dashboard";
+import { Transactions } from "@/pages/Transactions";
 
-/*function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore()
     return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
-}*/
+}
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore()
@@ -22,7 +22,7 @@ function App() {
         <Layout>
             <Routes>
                 <Route
-                    path="/"
+                    path="/login"
                     element={
                         <PublicRoute>
                             <Login />
@@ -38,37 +38,29 @@ function App() {
                     }
                 />
                 <Route
-                    path="/dashboard"
+                    path="/"
                     element={
-                        <PublicRoute>
+                        <ProtectedRoute>
                             <Dashboard />
-                        </PublicRoute>
+                        </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/categories"
                     element={
-                        <PublicRoute>
+                        <ProtectedRoute>
                             <Categories />
-                        </PublicRoute>
+                        </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/transactions"
                     element={
-                        <PublicRoute>
-                            <Transactions />
-                        </PublicRoute>
-                    }
-                />
-                {/*<Route
-                    path="/"
-                    element={
                         <ProtectedRoute>
-                            <IdeasPage />
+                            <Transactions />
                         </ProtectedRoute>
                     }
-                />*/}
+                />
             </Routes>
         </Layout>
     )

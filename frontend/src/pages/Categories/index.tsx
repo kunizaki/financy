@@ -1,19 +1,30 @@
-import {Button} from "@/components/ui/button.tsx";
-import { ArrowRightLeftIcon, Plus, SquarePenIcon, Tag, Trash2 } from "lucide-react"
-import {Card} from "@/components/ui/card.tsx";
-import {DynamicIcon} from "lucide-react/dynamic";
-import {Category} from "@/types";
 import {useMemo, useState} from "react";
-import {CreateCategoryDialog} from "@/pages/Categories/components/CreateCategoryDialog.tsx";
-import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts";
 import {useQuery} from "@apollo/client/react";
+
+import {ArrowRightLeftIcon, Plus, SquarePenIcon, Tag, Trash2} from "lucide-react"
+
+import {DynamicIcon} from "lucide-react/dynamic"
+
+
+import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts";
+
+import {Category} from "@/types";
+
 import {Spinner} from "@/components/ui/spinner.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Card} from "@/components/ui/card.tsx";
+
+import {CreateCategoryDialog} from "@/pages/Categories/components/CreateCategoryDialog.tsx";
 
 export function Categories() {
     const [openDialog, setOpenDialog] = useState(false)
-    const { data, loading, refetch } = useQuery<{ categories: Category[] }>(LIST_CATEGORIES)
+    const { data, loading, refetch } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
 
-    const categories = data?.categories || []
+    const categories = data?.listCategories || []
+
+    const totalTransactions = useMemo(() => {
+        return categories.reduce((acc, c) => acc + c.transactionsCount, 0)
+    }, [categories])
 
     const featuredCategory = useMemo(() => {
         if (categories.length > 0) {
@@ -49,7 +60,7 @@ export function Categories() {
                                 <Tag className="w-6 h-6 text-gray-700" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[28px] font-bold text-gray-800">8</span>
+                                <span className="text-[28px] font-bold text-gray-800">{categories.length}</span>
                                 <span className="text-xs text-gray-500">TOTAL DE CATEGORIAS</span>
                             </div>
                         </Card>
@@ -58,7 +69,7 @@ export function Categories() {
                                 <ArrowRightLeftIcon className="w-6 h-6 text-purple-600" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[28px] font-bold text-gray-800">27</span>
+                                <span className="text-[28px] font-bold text-gray-800">{totalTransactions}</span>
                                 <span className="text-xs text-gray-500">TOTAL DE TRANSAÇÕES</span>
                             </div>
                         </Card>

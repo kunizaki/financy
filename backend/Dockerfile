@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copiar arquivos de dependências
 COPY package*.json ./
-COPY src/lib/prisma ./src/lib/prisma/
+COPY prisma ./prisma/
 
 # Instalar dependências
 RUN npm install
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Gerar o cliente do Prisma e construir o projeto
-RUN npx prisma generate --schema=src/lib/prisma/schema.prisma
+RUN npx prisma generate --schema=prisma/schema.prisma
 RUN npm run build
 
 # Estágio de produção
@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/src/lib/prisma ./src/lib/prisma
+COPY --from=build /app/prisma ./prisma
 
 # Variáveis de ambiente
 ENV NODE_ENV=production

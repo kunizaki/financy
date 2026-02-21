@@ -5,9 +5,6 @@ import { TransactionType } from '../../models/transaction.model'
 @InputType()
 export class CreateTransactionInput {
   @Field(() => String)
-  userId!: string
-
-  @Field(() => String)
   @MinLength(5, { message: 'Descrição deve ter no mínimo 5 caracteres' })
   description!: string
 
@@ -31,9 +28,6 @@ export class CreateTransactionInput {
 @InputType()
 export class UpdateTransactionInput {
   @Field(() => String)
-  userId!: string
-
-  @Field(() => String)
   @MinLength(5, { message: 'Descrição deve ter no mínimo 5 caracteres' })
   description!: string
 
@@ -56,9 +50,6 @@ export class UpdateTransactionInput {
 
 @InputType()
 export class ListTransactionInput {
-  @Field(() => String)
-  userId?: string
-
   @Field(() => String, { nullable: true })
   @IsOptional()
   description?: string

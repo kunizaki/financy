@@ -1,18 +1,31 @@
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
+import {
+  Arg,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+  UseMiddleware,
+} from 'type-graphql'
 import { IsAuth } from '../middlewares/auth.middleware'
+import { GqlUser } from '../graphql/decorators/user.decorator'
+
+import { UserModel } from '../models/user.model'
 import { CategoryModel } from '../models/category.model'
+
 import { CategoryService } from '../services/category.service'
+import { TransactionService } from '../services/transaction.service'
+
 import {
   CreateCategoryInput,
   UpdateCategoryInput,
 } from '../dtos/input/category.input'
-import { GqlUser } from '../graphql/decorators/user.decorator'
-import { UserModel } from '../models/user.model'
 
 @Resolver(() => CategoryModel)
 @UseMiddleware(IsAuth)
 export class CategoryResolver {
   private categoryService = new CategoryService()
+  private transactionService = new TransactionService()
 
   @Mutation(() => CategoryModel)
   async createCategory(
@@ -50,5 +63,18 @@ export class CategoryResolver {
   @Query(() => [CategoryModel])
   async listCategories(@GqlUser() user: UserModel): Promise<CategoryModel[]> {
     return this.categoryService.listCategories(user.id)
+  }
+
+  @FieldResolver(() => Number)
+  async transactionsCount(
+    @Root() category: CategoryModel,
+    @GqlUser() user: UserModel,
+  ): Promise<number> {
+    if (category.transactionsCount !== undefined)
+      return category.transactionsCount
+    return this.transactionService.countTransactionsByCategory(
+      category.id,
+      user.id,
+    )
   }
 }

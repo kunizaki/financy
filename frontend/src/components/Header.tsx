@@ -12,7 +12,7 @@ export function Header() {
 
     return (
         <>
-            {!isAuthenticated && (
+            {isAuthenticated && (
                 <div className="flex flex-row justify-between content-center items-center w-full px-12 py-4 bg-white border-b-gray-700">
                         <img src={logo} alt="logomarca" className="h-6" />
                         <div className="hidden md:flex items-center gap-4 cursor-pointer">
@@ -57,7 +57,7 @@ export function Header() {
                         </Avatar>
 
                     </div>
-                )}
+            )}
         </>
     )
 }

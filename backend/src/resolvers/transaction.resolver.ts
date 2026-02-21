@@ -12,8 +12,8 @@ import { TransactionModel } from '../models/transaction.model'
 import { TransactionService } from '../services/transaction.service'
 import {
   CreateTransactionInput,
-  UpdateTransactionInput,
   ListTransactionInput,
+  UpdateTransactionInput,
 } from '../dtos/input/transaction.input'
 import { TransactionListOutput } from '../dtos/output/transaction.output'
 import { GqlUser } from '../graphql/decorators/user.decorator'
@@ -76,6 +76,7 @@ export class TransactionResolver {
     @Root() transaction: TransactionModel,
     @GqlUser() user: UserModel,
   ): Promise<number> {
+    if (!transaction.categoryId) return 0
     return this.transactionService.countTransactionsByCategory(
       transaction.categoryId,
       user.id,

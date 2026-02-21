@@ -2,7 +2,7 @@ import { useState } from "react"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthStore } from "@/stores/auth"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import { toast } from "sonner"
 import { z } from "zod"
 
@@ -30,6 +30,7 @@ const loginValidationSchema = z.object({
 type LoginFormData = z.infer<typeof loginValidationSchema>
 
 export function Login() {
+    const navigate = useNavigate()
     const {
         register,
         handleSubmit,
@@ -157,9 +158,9 @@ export function Login() {
                                 <div className="flex-1 border-b border-gray-500 mb-2.5" />
                             </div>
                             <FieldSeparator className="text-gray-600">Ainda não tem conta?</FieldSeparator>
-                            <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]">
+                            <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]" onClick={() => navigate("/signup")}>
                                 <UserPlus2 className="w-5 h-5" />
-                                <Link to="/signup" className="text-sm"> Criar conta </Link>
+                                <span className="text-sm"> Criar conta </span>
                             </Button>
                         </FieldGroup>
                     </form>

@@ -1,9 +1,9 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import { apolloClient } from "@/lib/graphql/apollo"
-import type { User ,RegisterInput, LoginInput} from '@/types'
-import { REGISTER } from '@/lib/graphql/mutations/Register'
-import { LOGIN } from '../lib/graphql/mutations/Login'
+import {create} from "zustand"
+import {persist} from "zustand/middleware"
+import {apolloClient} from "@/lib/graphql/apollo"
+import type {LoginInput, RegisterInput, User} from '@/types'
+import {REGISTER} from '@/lib/graphql/mutations/Register'
+import {LOGIN} from '@/lib/graphql/mutations/Login'
 
 type RegisterMutationData = {
     register: {
@@ -44,7 +44,6 @@ export const useAuthStore = create<AuthState>() (
                             data: {
                                 email: loginData.email,
                                 password: loginData.password,
-                                remember: loginData.remember
                             }
                         }
                     })
@@ -70,7 +69,7 @@ export const useAuthStore = create<AuthState>() (
                     }
                     return false
                 }catch(error){
-                    console.log("Erro ao fazer o login")
+                    console.error("Erro ao fazer o login")
                     throw error
                 }
             },
@@ -106,7 +105,7 @@ export const useAuthStore = create<AuthState>() (
                     }
                     return false
                 }catch(error){
-                    console.log("Erro ao fazer o cadastro")
+                    console.error("Erro ao fazer o cadastro")
                     throw error
                 }
             },

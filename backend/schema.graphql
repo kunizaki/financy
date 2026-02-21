@@ -21,7 +21,6 @@ input CreateCategoryInput {
   description: String
   icon: String!
   title: String!
-  userId: String!
 }
 
 input CreateTransactionInput {
@@ -29,7 +28,6 @@ input CreateTransactionInput {
   date: String!
   description: String!
   transactionType: TransactionType!
-  userId: String!
   value: Float!
 }
 
@@ -43,7 +41,6 @@ input ListTransactionInput {
   description: String
   period: String
   transactionType: TransactionType
-  userId: String!
 }
 
 input LoginInput {
@@ -123,7 +120,6 @@ input UpdateCategoryInput {
   description: String
   icon: String!
   title: String!
-  userId: String!
 }
 
 input UpdateTransactionInput {
@@ -131,7 +127,6 @@ input UpdateTransactionInput {
   date: String!
   description: String!
   transactionType: TransactionType!
-  userId: String!
   value: Float!
 }
 
