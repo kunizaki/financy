@@ -37,23 +37,26 @@ export function DeleteCategoryDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="bg-white">
                 <DialogHeader>
                     <DialogTitle>Exclusão de Categoria</DialogTitle>
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
                     Tem certeza que deseja remover
-                    <span className="font-medium"> {category?.description}</span>? Essa ação não
-                    poderá ser desfeita.
+                    <span className="font-bold"> {category?.description}</span>?
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    Essa ação não poderá ser desfeita.
                 </p>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button variant="default" onClick={() => onOpenChange(false)} className="bg-gray-400 hover:bg-gray-300 text-white">
                         Cancelar
                     </Button>
                     <Button
                         variant="destructive"
                         onClick={handleDeleteCategory}
                         disabled={loading}
+                        className="bg-red-800 hover:bg-red-700 text-white"
                     >
                         Remover
                     </Button>

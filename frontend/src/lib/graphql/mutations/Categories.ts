@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import {gql} from '@apollo/client'
 
 export const CREATE_CATEGORY = gql`
   mutation CreateCategory($data: CreateCategoryInput!) {
@@ -18,7 +18,7 @@ export const DELETE_CATEGORY = gql`
 `
 
 export const UPDATE_CATEGORY = gql`
-    mutation UpdateCategory($id: Int!, $data: UpdateCategoryInput!) {
+    mutation UpdateCategory($id: String!, $data: UpdateCategoryInput!) {
         updateCategory(id: $id, data: $data) {
             id
             title

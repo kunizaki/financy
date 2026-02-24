@@ -76,8 +76,6 @@ export function CreateCategoryDialog({
     const [iconSelected, setIconSelected] = useState<string>(iconsAvailable[0])
     const [colorSelected, setColorSelected] = useState<string>(colorsAvailable[0])
 
-
-
     const [createCategory, { loading }] = useMutation(CREATE_CATEGORY, {
         onCompleted() {
             toast.success("Categoria criada com sucesso")
