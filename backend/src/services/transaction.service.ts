@@ -8,26 +8,6 @@ import { TransactionType } from '../models/transaction.model'
 import { GraphQLError } from 'graphql'
 
 export class TransactionService {
-  private periodToYearMonthPrefix(period: string): string {
-    const match = period.trim().match(/^(\d{2})\/(\d{4})$/)
-    if (!match)
-      throw new GraphQLError('Período inválido. Use MM/YYYY (ex.: 11/2025).', {
-        extensions: { code: 'BAD_USER_INPUT' },
-      })
-
-    const month = Number(match[1]) // 1..12
-    const year = Number(match[2])
-
-    if (!Number.isInteger(month) || month < 1 || month > 12) {
-      throw new GraphQLError('Mês inválido no período. Use 01 a 12.', {
-        extensions: { code: 'BAD_USER_INPUT' },
-      })
-    }
-
-    const mm = String(month).padStart(2, '0')
-    return `${year}-${mm}` // prefixo ISO (YYYY-MM)
-  }
-
   async listTransactions(data: ListTransactionInput, userId: string) {
     const { description, transactionType, categoryId, period } = data
 
@@ -40,7 +20,7 @@ export class TransactionService {
 
     let periodSelected = new Date().toISOString().slice(0, 7)
     if (period) {
-      periodSelected = this.periodToYearMonthPrefix(period)
+      periodSelected = period
     }
     where.date = { startsWith: periodSelected }
 

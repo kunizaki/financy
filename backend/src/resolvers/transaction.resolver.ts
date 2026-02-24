@@ -10,6 +10,7 @@ import {
 import { IsAuth } from '../middlewares/auth.middleware'
 import { TransactionModel } from '../models/transaction.model'
 import { TransactionService } from '../services/transaction.service'
+import { CategoryService } from '../services/category.service'
 import {
   CreateTransactionInput,
   ListTransactionInput,
@@ -18,11 +19,13 @@ import {
 import { TransactionListOutput } from '../dtos/output/transaction.output'
 import { GqlUser } from '../graphql/decorators/user.decorator'
 import { UserModel } from '../models/user.model'
+import { CategoryModel } from '../models/category.model'
 
 @Resolver(() => TransactionModel)
 @UseMiddleware(IsAuth)
 export class TransactionResolver {
   private transactionService = new TransactionService()
+  private categoryService = new CategoryService()
 
   @Mutation(() => TransactionModel)
   async createTransaction(
@@ -69,6 +72,15 @@ export class TransactionResolver {
   @Query(() => Number)
   async getTotalAmount(@GqlUser() user: UserModel): Promise<number> {
     return this.transactionService.getTotalAmount(user.id)
+  }
+
+  @FieldResolver(() => CategoryModel, { nullable: true })
+  async category(
+    @Root() transaction: TransactionModel,
+    @GqlUser() user: UserModel,
+  ): Promise<CategoryModel | null> {
+    if (!transaction.categoryId) return null
+    return this.categoryService.findCategory(transaction.categoryId, user.id)
   }
 
   @FieldResolver(() => Number)
