@@ -44,6 +44,7 @@ export function CreateTransactionDialog({
 
     const {
         register,
+        watch,
         handleSubmit,
         reset,
         control,
@@ -58,6 +59,9 @@ export function CreateTransactionDialog({
             categoryId: "",
         }
     })
+
+    const description = watch("description")
+    const value = watch("value")
 
     const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES);
     const categories = categoriesData?.listCategories || [];
@@ -137,6 +141,7 @@ export function CreateTransactionDialog({
                             {...register('description')}
                             className={[
                                 errors.description ? "border-red-500" : "border-gray-300",
+                                description && description.length > 0 ? "text-black" : "text-gray-400",
                                 "rounded"
                             ].join(" ")}
                         />
@@ -160,6 +165,7 @@ export function CreateTransactionDialog({
                             <Label htmlFor="value">Valor</Label>
                             <InputGroup className={[
                                 errors.value ? "border-red-500" : "border-gray-300",
+                                value && value > 0 ? "text-black" : "text-gray-400",
                                 "rounded"
                                 ].join(" ")}
                             >
@@ -187,7 +193,7 @@ export function CreateTransactionDialog({
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger className={[
                                             errors.categoryId ? "border-red-500" : "border-gray-300",
-                                            "rounded"
+                                            "rounded text-gray-400"
                                         ].join(" ")}
                                     >
                                         <SelectValue placeholder="Selecione uma categoria" />

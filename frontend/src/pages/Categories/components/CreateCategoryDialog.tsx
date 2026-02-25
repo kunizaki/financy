@@ -64,6 +64,7 @@ export function CreateCategoryDialog({
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm<CategoryFormData>({
         resolver: zodResolver(categoryValidationSchema),
@@ -72,6 +73,9 @@ export function CreateCategoryDialog({
             description: "",
         }
     })
+
+    const title = watch('title')
+    const description = watch('description')
 
     const [iconSelected, setIconSelected] = useState<string>(iconsAvailable[0])
     const [colorSelected, setColorSelected] = useState<string>(colorsAvailable[0])
@@ -124,6 +128,7 @@ export function CreateCategoryDialog({
                             disabled={loading}
                             className={[
                                 errors.title ? "border-red-500" : "border-gray-300",
+                                title && title.length > 0 ? "text-black" : "text-gray-400",
                                 "rounded"
                             ].join(" ")}
                         />
@@ -139,6 +144,7 @@ export function CreateCategoryDialog({
                             disabled={loading}
                             className={[
                                 errors.title ? "border-red-500" : "border-gray-300",
+                                description && description.length > 0 ? "text-black" : "text-gray-400",
                                 "rounded"
                             ].join(" ")}
                         />

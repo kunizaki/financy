@@ -61,6 +61,7 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
 
     const {
         register,
+        watch,
         handleSubmit,
         setValue,
         formState: { errors },
@@ -71,6 +72,9 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
             description: "",
         }
     })
+
+    const title = watch("title")
+    const description = watch("description")
 
     const [iconSelected, setIconSelected] = useState<string>(iconsAvailable[0])
     const [colorSelected, setColorSelected] = useState<string>(colorsAvailable[0])
@@ -133,6 +137,7 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
                                 {...register('title')}
                                 className={[
                                     errors.title ? "border-red-500" : "border-gray-300",
+                                    title && title.length > 0 ? "text-black" : "text-gray-400",
                                     "rounded"
                                 ].join(" ")}
                             />
@@ -146,6 +151,7 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
                                 {...register('description')}
                                 className={[
                                     errors.description ? "border-red-500" : "border-gray-300",
+                                    description && description.length > 0 ? "text-black" : "text-gray-400",
                                     "rounded"
                                 ].join(" ")}
                             />
