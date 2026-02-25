@@ -3,13 +3,16 @@ import {useState} from "react"
 import {z} from "zod"
 import {useForm} from "react-hook-form"
 import {zodResolver} from '@hookform/resolvers/zod'
+import {Link} from "react-router-dom"
+
+import {toast} from "sonner"
+import {useAuthStore} from "@/stores/auth"
+import {getErrorMessage} from "@/lib/utils.ts";
 
 import logo from "@/assets/logo.svg"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
-import {Button} from "@/components/ui/button"
-import {Link} from "react-router-dom"
-import {useAuthStore} from "@/stores/auth"
-import {toast} from "sonner"
+
+import {Eye, EyeOff, LucideLock, LucideLogIn, LucideMail, User2} from "lucide-react"
+
 import {
     Field,
     FieldDescription,
@@ -19,8 +22,9 @@ import {
     FieldSeparator,
     FieldSet
 } from "@/components/ui/field";
-import {Eye, EyeOff, LucideLock, LucideLogIn, LucideMail, User2} from "lucide-react"
+import {Button} from "@/components/ui/button"
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
 
 const handleUserName = (nameInput: string) => {
     const nameLowerCase = nameInput.toLowerCase()

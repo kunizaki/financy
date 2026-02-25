@@ -1,8 +1,15 @@
-import {ArrowDownCircle, ArrowUpCircle, ChevronRight, Wallet} from "lucide-react"
+import {useMemo, useState} from "react";
 import {Card} from "@/components/ui/card.tsx";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {Transaction, TransactionType} from "@/types";
+import {useQuery} from "@apollo/client/react";
+import {useNavigate} from "react-router-dom";
+import {LIST_TRANSACTIONS} from "@/lib/graphql/queries/Transactions.ts";
+
 import {DynamicIcon} from "lucide-react/dynamic";
+import {ArrowDownCircle, ArrowUpCircle, ChevronRight, Wallet} from "lucide-react"
+
+import {CreateTransactionDialog} from "@/pages/Transactions/components/CreateTransactionDialog.tsx";
+
+import {Transaction, TransactionType} from "@/types";
 
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -20,110 +27,41 @@ type CategoryTransaction = {
     transactionsCount: number
 }
 
+type ListTransactionsResponse = {
+    listTransactions: {
+        totalCredit: number;
+        totalDebit: number;
+        transactions: Transaction[];
+    };
+};
+
 export function Dashboard() {
+    const navigate = useNavigate()
+
+    const [openDialog, setOpenDialog] = useState(false)
     const [monthCredits, setMonthCredits] = useState(0)
     const [monthDebits, setMonthDebits] = useState(0)
     const [totalBalance, setTotalBalance] = useState(0)
-    const [lastTransactions, setLastTransactions] = useState<Transaction[]>([])
     const [categoriesFromTransactions, setCategoriesFromTransactions] = useState<CategoryTransaction[]>([])
 
-    const getLastTransactions = useCallback(async () => {
-        const transactionsInfos = {
-            totalCredit: 9000.00,
-            totalDebit: 1500.00,
-            transactions: [
-                {
-                    id: '1',
-                    userId: '1',
-                    description: 'Recebimento de Salário',
-                    transactionType: TransactionType.CREDIT,
-                    date: '2026-02-08T12:00:00.000Z',
-                    value: 9000.00,
-                    categoryId: '1',
-                    createdAt: '2026-02-08T12:00:00.000Z',
-                    category: {
-                        id: '1',
-                        userId: '1',
-                        title: 'Salário',
-                        description: 'Recebimento de salário mensal.',
-                        icon: 'wallet',
-                        color: '#095c00',
-                        transactionsCount: 2
-                    }
-                },
-                {
-                    id: '2',
-                    userId: '1',
-                    description: 'Compra de alimentos',
-                    transactionType: TransactionType.DEBIT,
-                    date: '2026-02-10T12:00:00.000Z',
-                    value: 1000.00,
-                    categoryId: '1',
-                    createdAt: '2026-02-10T12:00:00.000Z',
-                    category: {
-                        id: '2',
-                        userId: '1',
-                        title: 'Alimentação',
-                        description: 'Descrição da categoria alimentação',
-                        icon: 'fork-knife',
-                        color: '#7a0000',
-                        transactionsCount: 8
-                    }
-                },
-                {
-                    id: '3',
-                    userId: '1',
-                    description: 'Plano de Saúde',
-                    transactionType: TransactionType.DEBIT,
-                    date: '2026-02-10T12:00:00.000Z',
-                    value: 500.00,
-                    categoryId: '3',
-                    createdAt: '2026-02-10T12:00:00.000Z',
-                    category: {
-                        id: '4',
-                        userId: '1',
-                        title: 'Saúde',
-                        description: 'Descrição da categoria saúde',
-                        icon: 'heart',
-                        color: '#001bd3',
-                        transactionsCount: 30
-                    }
-                },
-                {
-                    id: '4',
-                    userId: '1',
-                    description: 'Lanchonete',
-                    transactionType: TransactionType.DEBIT,
-                    date: '2026-02-11T12:00:00.000Z',
-                    value: 200.00,
-                    categoryId: '1',
-                    createdAt: '2026-02-11T12:00:00.000Z',
-                    category: {
-                        id: '2',
-                        userId: '1',
-                        title: 'Alimentação',
-                        description: 'Descrição da categoria alimentação',
-                        icon: 'fork-knife',
-                        color: '#7a0000',
-                        transactionsCount: 8
-                    }
-                },
-            ]
-        } satisfies {
-            totalCredit: number
-            totalDebit: number
-            transactions: Transaction[]
+    const { data: transactionsData, refetch } = useQuery<ListTransactionsResponse>(
+        LIST_TRANSACTIONS,
+        {
+            variables: {
+                data: {
+                    period: dayjs().tz('America/Sao_Paulo').format('YYYY-MM'),
+                }
+            },
+            fetchPolicy: "cache-and-network",
         }
-        setMonthCredits(transactionsInfos.totalCredit)
-        setMonthDebits(transactionsInfos.totalDebit)
+    );
 
-        const transactionsReceived = transactionsInfos.transactions
-        setLastTransactions(transactionsReceived)
-    }, [])
+    const lastTransactions = transactionsData?.listTransactions || null;
 
     useMemo(() => {
+        if (!lastTransactions) return
         const calculatedCategoriesFromTransactions = Array.from(
-            lastTransactions
+            lastTransactions.transactions
                 .filter((t) => t.transactionType !== TransactionType.CREDIT)
                 .reduce((map, transaction) => {
                     const categoryId = transaction.category.id
@@ -150,16 +88,11 @@ export function Dashboard() {
         )
 
         setCategoriesFromTransactions(calculatedCategoriesFromTransactions)
+        setMonthCredits(lastTransactions.totalCredit)
+        setMonthDebits(lastTransactions.totalDebit)
+        setTotalBalance(lastTransactions.totalCredit - lastTransactions.totalDebit)
     }, [lastTransactions])
 
-    const getTotalBalance = useCallback(async () => {
-        setTotalBalance(7500.00)
-    }, [])
-
-    useEffect(() => {
-        getLastTransactions()
-        getTotalBalance()
-    }, [getLastTransactions, getTotalBalance]);
     return (
         <div className="flex flex-col min-h-screen justify-start p-0 gap-3 lg:p-12 lg:gap-8">
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-3 lg:gap-6">
@@ -189,12 +122,12 @@ export function Dashboard() {
                 <Card className="flex flex-col rounded-xl bg-white border border-gray-200 gap-4 md:col-span-2">
                     <div className="flex flex-row justify-between items-center w-full p-5 border-b border-gray-200">
                         <span className="text-xs text-gray-500">TRANSAÇÕES RECENTES</span>
-                        <div className="flex flex-row cursor-pointer" onClick={() => alert("Direcionando....")}>
+                        <div className="flex flex-row cursor-pointer" onClick={() => navigate('/transactions')}>
                             <span className="text-sm text-green-950">Ver todas</span>
                             <ChevronRight className="text-green-950 ml-1 w-5 h-5" />
                         </div>
                     </div>
-                    {lastTransactions.map((transaction) => (
+                    {lastTransactions?.transactions && lastTransactions.transactions.map((transaction) => (
                         <div key={transaction.id} className="grid grid-cols-1 px-4 pb-4 border-b border-gray-200 gap-4 xl:grid-cols-2">
                             <div className="flex flex-row items-center gap-4">
                                 <div className="flex justify-center items-center w-10 h-10 rounded-[8px]" style={{ backgroundColor: `${transaction.category.color}20` }}>
@@ -221,14 +154,14 @@ export function Dashboard() {
                         </div>
                     ))}
                     <div className="flex flex-row justify-center items-center w-full pb-5">
-                        <span className="text-green-950 cursor-pointer" onClick={() => alert("Nova transação.")}>+ Nova transação</span>
+                        <span className="text-green-950 cursor-pointer" onClick={() => setOpenDialog(true)}>+ Nova transação</span>
                     </div>
                 </Card>
 
                 <Card className="flex flex-col rounded-xl bg-white border border-gray-200 gap-4 md:col-span-1">
                     <div className="flex flex-row justify-between items-center w-full p-5 border-b border-gray-200">
                         <span className="text-xs text-gray-500">CATEGORIAS</span>
-                        <div className="flex flex-row cursor-pointer" onClick={() => alert("Direcionando....")}>
+                        <div className="flex flex-row cursor-pointer" onClick={() => navigate('/categories')}>
                             <span className="text-sm text-green-950">Gerenciar</span>
                             <ChevronRight className="text-green-950 ml-1 w-5 h-5" />
                         </div>
@@ -251,6 +184,7 @@ export function Dashboard() {
                 </Card>
             </div>
 
+            <CreateTransactionDialog open={openDialog} onOpenChange={setOpenDialog} onCreated={() => refetch()} />
         </div>
     )
 }

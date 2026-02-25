@@ -2,13 +2,13 @@ import {z} from "zod"
 import {Controller, SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from '@hookform/resolvers/zod'
 import {useMutation, useQuery} from "@apollo/client/react"
-import {toast} from "sonner"
-
-import {getErrorMessage} from "@/lib/utils.ts"
-import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts"
-import {CREATE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts"
-
 import {ArrowDownCircle, ArrowUpCircle} from "lucide-react"
+
+import {toast} from "sonner"
+import {getErrorMessage} from "@/lib/utils.ts"
+
+import {CREATE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts"
+import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts"
 
 import {Input} from "@/components/ui/input.tsx"
 import {Label} from "@/components/ui/label.tsx"
@@ -82,6 +82,11 @@ export function CreateTransactionDialog({
         })
     }
 
+    const handleCancel = () => {
+        reset()
+        onOpenChange(false)
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
@@ -95,7 +100,6 @@ export function CreateTransactionDialog({
                         Registre sua despesa ou receita
                     </DialogDescription>
                 </DialogHeader>
-
                 <form onSubmit={handleSubmit(createTransactionSubmit)} className="space-y-4 mt-4">
                     <div className="p-2 border border-gray-300 rounded-xl">
                         <Controller
@@ -142,6 +146,7 @@ export function CreateTransactionDialog({
                         />
                         {errors.description && <span className="text-xs text-red-500">{errors.description.message}</span>}
                     </div>
+
                     <div className="flex flex-row space-x-4 w-full">
                         <div className="space-y-1 w-full">
                             <Label htmlFor="date">Data</Label>
@@ -161,7 +166,7 @@ export function CreateTransactionDialog({
                             <InputGroup className={[
                                 errors.value ? "border-red-500" : "border-gray-300",
                                 "rounded"
-                                ].join(" ")}
+                            ].join(" ")}
                             >
                                 <InputGroupInput
                                     id="value"
@@ -177,7 +182,6 @@ export function CreateTransactionDialog({
                             {errors.value && <span className="text-xs text-red-500">{errors.value.message}</span>}
                         </div>
                     </div>
-
                     <div className="space-y-1">
                         <Label>Categoria</Label>
                         <Controller
@@ -186,9 +190,9 @@ export function CreateTransactionDialog({
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger className={[
-                                            errors.categoryId ? "border-red-500" : "border-gray-300",
-                                            "rounded"
-                                        ].join(" ")}
+                                        errors.categoryId ? "border-red-500" : "border-gray-300",
+                                        "rounded"
+                                    ].join(" ")}
                                     >
                                         <SelectValue placeholder="Selecione uma categoria" />
                                     </SelectTrigger>
@@ -206,6 +210,9 @@ export function CreateTransactionDialog({
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={handleCancel}>
+                            Cancelar
+                        </Button>
                         <Button
                             type="submit"
                             className="bg-[#1F6F43] hover:bg-[#1a5f3a] text-white w-full rounded"
