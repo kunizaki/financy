@@ -205,7 +205,7 @@ export function CreateTransactionDialog({
                         {errors.categoryId && <span className="text-xs text-red-500">{errors.categoryId.message}</span>}
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4">
+                    <div className="pt-4">
                         <Button
                             type="submit"
                             className="bg-[#1F6F43] hover:bg-[#1a5f3a] text-white w-full rounded"

@@ -2,7 +2,7 @@ import {z} from "zod"
 import {Controller, SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from '@hookform/resolvers/zod'
 
-import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog.tsx"
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog.tsx"
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group.tsx"
 import {Input} from "@/components/ui/input.tsx"
 import {Label} from "@/components/ui/label.tsx"
@@ -12,11 +12,12 @@ import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts"
 import {toast} from "sonner"
 import {getErrorMessage} from "@/lib/utils.ts"
 
-import {ArrowDownCircle, ArrowUpCircle, X} from "lucide-react"
+import {ArrowDownCircle, ArrowUpCircle} from "lucide-react"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx"
 import {Category, Transaction, TransactionType} from "@/types"
 import {UPDATE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts";
 import {useEffect} from "react";
+import {InputGroup, InputGroupAddon, InputGroupInput, InputGroupText} from "@/components/ui/input-group.tsx";
 
 interface EditTransactionDialogProps {
     open: boolean
@@ -84,11 +85,6 @@ export function EditTransactionDialog({
         })
     }
 
-    const handleCancel = () => {
-        reset()
-        onOpenChange(false)
-    }
-
     useEffect(() => {
         if (transaction) {
             setValue('transactionType', transaction.transactionType)
@@ -102,17 +98,20 @@ export function EditTransactionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md bg-white">
-                <DialogHeader className="flex flex-row items-center justify-between">
-                    <DialogTitle className="text-2xl font-bold">
+            <DialogContent
+                className="max-w-md bg-white sm:rounded-xl border border-gray-200"
+            >
+                <DialogHeader className="flex flex-col">
+                    <DialogTitle className="text-xl font-bold h-5">
                         Editar transação
                     </DialogTitle>
-                    <X className="w-6 h-6 cursor-pointer" onClick={handleCancel} />
+                    <DialogDescription className="text-sm text-gray-500">
+                        Edite sua despesa ou receita
+                    </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(updateTransactionSubmit)} className="space-y-4 mt-4">
-                    <div className="flex flex-col gap-2">
-                        <Label>Tipo de transação</Label>
+                    <div className="p-2 border border-gray-300 rounded-xl">
                         <Controller
                             name="transactionType"
                             control={control}
@@ -124,20 +123,20 @@ export function EditTransactionDialog({
                                     onValueChange={(val) => val && field.onChange(val)}
                                 >
                                     <ToggleGroupItem
-                                        value={TransactionType.CREDIT}
-                                        className="flex-1 gap-2 data-[state=on]:bg-green-100 data-[state=on]:text-green-800 data-[state=on]:border-green-800"
-                                        variant="outline"
-                                    >
-                                        <ArrowUpCircle className="w-4 h-4" />
-                                        Entrada
-                                    </ToggleGroupItem>
-                                    <ToggleGroupItem
                                         value={TransactionType.DEBIT}
-                                        className="flex-1 gap-2 data-[state=on]:bg-red-100 data-[state=on]:text-red-800 data-[state=on]:border-red-800"
+                                        className="flex-1 gap-2 data-[state=on]:text-red-800 data-[state=off]:text-gray-400 data-[state=on]:border-red-800 sm:rounded data-[state=on]:border data-[state=off]:border-none shadow-none"
                                         variant="outline"
                                     >
                                         <ArrowDownCircle className="w-4 h-4" />
-                                        Saída
+                                        Despesa
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem
+                                        value={TransactionType.CREDIT}
+                                        className="flex-1 gap-2 data-[state=on]:text-[#1F6F43] data-[state=off]:text-gray-400 data-[state=on]:border-[#1F6F43] sm:rounded data-[state=on]:border data-[state=off]:border-none shadow-none"
+                                        variant="outline"
+                                    >
+                                        <ArrowUpCircle className="w-4 h-4" />
+                                        Receita
                                     </ToggleGroupItem>
                                 </ToggleGroup>
                             )}
@@ -150,33 +149,48 @@ export function EditTransactionDialog({
                             id="description"
                             placeholder="Ex: Aluguel, Salário..."
                             {...register('description')}
-                            className={errors.description ? "border-red-500" : ""}
+                            className={[
+                                errors.description ? "border-red-500" : "border-gray-300",
+                                "rounded"
+                            ].join(" ")}
                         />
                         {errors.description && <span className="text-xs text-red-500">{errors.description.message}</span>}
                     </div>
+                    <div className="flex flex-row space-x-4 w-full">
+                        <div className="space-y-1 w-full">
+                            <Label htmlFor="date">Data</Label>
+                            <Input
+                                id="date"
+                                type="date"
+                                {...register('date')}
+                                className={[
+                                    errors.date ? "border-red-500" : "border-gray-300",
+                                    "rounded"
+                                ].join(" ")}
+                            />
+                            {errors.date && <span className="text-xs text-red-500">{errors.date.message}</span>}
+                        </div>
 
-                    <div className="space-y-1">
-                        <Label htmlFor="value">Valor</Label>
-                        <Input
-                            id="value"
-                            type="number"
-                            step="0.01"
-                            placeholder="R$ 0,00"
-                            {...register('value', { valueAsNumber: true })}
-                            className={errors.value ? "border-red-500" : ""}
-                        />
-                        {errors.value && <span className="text-xs text-red-500">{errors.value.message}</span>}
-                    </div>
-
-                    <div className="space-y-1">
-                        <Label htmlFor="date">Data</Label>
-                        <Input
-                            id="date"
-                            type="date"
-                            {...register('date')}
-                            className={errors.date ? "border-red-500" : ""}
-                        />
-                        {errors.date && <span className="text-xs text-red-500">{errors.date.message}</span>}
+                        <div className="space-y-1 w-full">
+                            <Label htmlFor="value">Valor</Label>
+                            <InputGroup className={[
+                                errors.value ? "border-red-500" : "border-gray-300",
+                                "rounded"
+                            ].join(" ")}
+                            >
+                                <InputGroupInput
+                                    id="value"
+                                    type="number"
+                                    step="0.01"
+                                    className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    {...register('value', { valueAsNumber: true })}
+                                />
+                                <InputGroupAddon>
+                                    <InputGroupText>R$</InputGroupText>
+                                </InputGroupAddon>
+                            </InputGroup>
+                            {errors.value && <span className="text-xs text-red-500">{errors.value.message}</span>}
+                        </div>
                     </div>
 
                     <div className="space-y-1">
@@ -186,7 +200,11 @@ export function EditTransactionDialog({
                             control={control}
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className={errors.categoryId ? "border-red-500" : ""}>
+                                    <SelectTrigger className={[
+                                        errors.categoryId ? "border-red-500" : "border-gray-300",
+                                        "rounded"
+                                    ].join(" ")}
+                                    >
                                         <SelectValue placeholder="Selecione uma categoria" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white">
@@ -202,13 +220,10 @@ export function EditTransactionDialog({
                         {errors.categoryId && <span className="text-xs text-red-500">{errors.categoryId.message}</span>}
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4">
-                        <Button type="button" variant="outline" onClick={handleCancel}>
-                            Cancelar
-                        </Button>
+                    <div className="pt-4">
                         <Button
                             type="submit"
-                            className="bg-[#1F6F43] hover:bg-[#1a5f3a] text-white"
+                            className="bg-[#1F6F43] hover:bg-[#1a5f3a] text-white w-full rounded"
                             disabled={loading}
                         >
                             {loading ? "Salvando..." : "Salvar"}
