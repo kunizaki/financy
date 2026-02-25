@@ -27,6 +27,8 @@ import {useQuery} from "@apollo/client/react";
 import {LIST_TRANSACTIONS} from "@/lib/graphql/queries/Transactions.ts";
 import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts";
 import {Spinner} from "@/components/ui/spinner.tsx";
+import {EditTransactionDialog} from "@/pages/Transactions/components/EditTransactionDialog.tsx";
+import {DeleteTransactionDialog} from "@/pages/Transactions/components/DeleteTransactionDialog.tsx";
 
 type CategoryOption = { id: string; title: string };
 
@@ -52,6 +54,10 @@ dayjs.locale('pt-br')
 
 export function Transactions() {
     const [openDialog, setOpenDialog] = useState(false)
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+    const [openEditDialog, setOpenEditDialog] = useState(false)
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+
     const [transactionsList, setTransactionsList] = useState<Transaction[]>([])
     const [searchByDescription, setSearchByDescription] = useState('')
     const [searchByTransactionType, setSearchByTransactionType] = useState('all')
@@ -92,7 +98,7 @@ export function Transactions() {
       [searchByDescription, searchByTransactionType, searchByCategory, searchByPeriod]
     );
 
-    const { data, loading, refetch } = useQuery<ListTransactionsResponse>(
+    const { data: transactionsData, loading, refetch } = useQuery<ListTransactionsResponse>(
       LIST_TRANSACTIONS,
       {
         variables,
@@ -100,9 +106,10 @@ export function Transactions() {
       }
     );
 
-    const transactions = data?.listTransactions.transactions ?? []
-
     useEffect(() => {
+        if (!transactionsData) return;
+        const transactions = transactionsData?.listTransactions.transactions ?? []
+
         // Recalcula paginação com base no resultado atual
         const nextTotalPages = Math.max(1, Math.ceil(transactions.length / perPage))
         setTotalPages(nextTotalPages)
@@ -112,8 +119,9 @@ export function Transactions() {
 
         // Atualiza lista exibida
         const safePage = Math.min(actualPage, nextTotalPages)
+
         setTransactionsList(transactions.slice((safePage - 1) * perPage, safePage * perPage))
-    }, [actualPage, perPage, transactions])
+    }, [actualPage, perPage, transactionsData])
 
     useEffect(() => {
         // Quando filtros mudam, volta para a primeira página
@@ -223,7 +231,7 @@ export function Transactions() {
                         </TableRow>
                     </TableHeader>
                     <TableBody >
-                        {transactionsList.map((transaction) => (
+                        {transactionsList.length > 0 && transactionsList.map((transaction) => (
                             <TableRow key={transaction.id} className="flex flex-row justify-between items-center w-full px-6 py-1">
                                 <TableCell className="flex flex-row items-center gap-4 w-2/12 xl:w-6/12">
                                     <div className="flex justify-center items-center w-10 h-10 rounded-[8px]" style={{ backgroundColor: `${transaction.category.color}20` }}>
@@ -253,10 +261,24 @@ export function Transactions() {
                                 <TableCell className="text-xs text-gray-800 w-2/12 xl:w-1/12 text-end text-nowrap">{transaction.transactionType === TransactionType.CREDIT ? '+' : '-'} {transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                                 <TableCell className="w-2/12 xl:w-1/12">
                                     <div className="flex flex-row justify-end gap-2">
-                                        <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300">
+                                        <Button
+                                            variant="outline"
+                                            className="w-8 h-8 p-2 rounded-[8px] border-gray-300"
+                                            onClick={() => {
+                                                setSelectedTransaction(transaction)
+                                                setOpenDeleteDialog(true)
+                                            }}
+                                        >
                                             <Trash2 className="w-4 h-4 text-red-500" />
                                         </Button>
-                                        <Button variant="outline" className="w-8 h-8 p-2 rounded-[8px] border-gray-300">
+                                        <Button
+                                            variant="outline"
+                                            className="w-8 h-8 p-2 rounded-[8px] border-gray-300"
+                                            onClick={() => {
+                                                setSelectedTransaction(transaction)
+                                                setOpenEditDialog(true)
+                                            }}
+                                        >
                                             <SquarePenIcon className="w-4 h-4" />
                                         </Button>
                                     </div>
@@ -267,7 +289,7 @@ export function Transactions() {
                     <TableFooter>
                         <TableRow className="flex flex-row justify-between items-center w-full p-6">
                             <TableCell colSpan={1} className="text-center">
-                                {actualPage === 1 ? 1 : actualPage * perPage - perPage + 1} a {actualPage * perPage > transactions.length ? transactions.length : actualPage * perPage} de {transactions.length} resultados
+                                {actualPage === 1 ? 1 : actualPage * perPage - perPage + 1} a {actualPage * perPage > transactionsList.length ? transactionsList.length : actualPage * perPage} de {transactionsList.length} resultados
                             </TableCell>
                             <TableCell className="flex flex-row items-center gap-1">
                                 <ArrowLeftSquare className="w-6 h-6 text-gray-500 cursor-pointer" onClick={() => setActualPage((p) => Math.max(1, p - 1))} />
@@ -299,6 +321,12 @@ export function Transactions() {
             </Card>
 
             <CreateTransactionDialog open={openDialog} onOpenChange={setOpenDialog} onCreated={() => refetch()} />
+            {selectedTransaction && (
+                <>
+                    <EditTransactionDialog open={openEditDialog} onOpenChange={setOpenEditDialog} transaction={selectedTransaction} onEdited={() => refetch()} />
+                    <DeleteTransactionDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog} transaction={selectedTransaction} onDeleted={() => refetch()} />
+                </>
+            )}
         </div>
     )
 }

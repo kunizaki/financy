@@ -26,7 +26,10 @@ export function Categories() {
 
     const { data, loading, refetch } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
 
-    const categories = data?.listCategories || []
+    const categories = useMemo(() => {
+        const list = data?.listCategories ?? []
+        return list.slice().sort((a, b) => b.transactionsCount - a.transactionsCount)
+    }, [data?.listCategories])
 
     const totalTransactions = useMemo(() => {
         return categories.reduce((acc, c) => acc + c.transactionsCount, 0)

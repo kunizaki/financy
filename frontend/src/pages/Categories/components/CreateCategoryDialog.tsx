@@ -8,6 +8,7 @@ import {Button} from "@/components/ui/button.tsx"
 import {useMutation} from "@apollo/client/react"
 import {CREATE_CATEGORY} from "@/lib/graphql/mutations/Categories.ts"
 import {toast} from "sonner"
+import {getErrorMessage} from "@/lib/utils.ts"
 
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field.tsx";
 import {InputGroup, InputGroupInput} from "@/components/ui/input-group.tsx"
@@ -82,8 +83,8 @@ export function CreateCategoryDialog({
             onOpenChange(false)
             onCreated?.()
         },
-        onError() {
-            toast.error("Falha ao criar a categoria")
+        onError(error) {
+            toast.error(getErrorMessage(error))
         },
     })
 

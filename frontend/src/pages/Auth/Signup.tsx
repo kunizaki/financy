@@ -1,21 +1,15 @@
-import { useState } from "react"
+import {useState} from "react"
 
 import {z} from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from '@hookform/resolvers/zod'
+import {useForm} from "react-hook-form"
+import {zodResolver} from '@hookform/resolvers/zod'
 
 import logo from "@/assets/logo.svg"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
-import { useAuthStore } from "@/stores/auth"
-import { toast } from "sonner"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Link} from "react-router-dom"
+import {useAuthStore} from "@/stores/auth"
+import {toast} from "sonner"
 import {
     Field,
     FieldDescription,
@@ -100,7 +94,7 @@ export function Signup() {
             }
         } catch (error) {
             console.error(error)
-            toast.success("Falha ao realizar o registro!")
+            toast.error(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
@@ -202,7 +196,7 @@ export function Signup() {
                                                 <LucideLock className="text-gray-500" />
                                             </InputGroupAddon>
                                             <InputGroupInput
-                                                id="password"
+                                                id="confirmPassword"
                                                 type={ visiblePassword ? "text" : "password" }
                                                 placeholder="Confirme sua senha"
                                                 {...register('confirmPassword', { required: true })}
@@ -219,7 +213,7 @@ export function Signup() {
                                         </InputGroup>
                                         <FieldDescription className="text-gray-500 text-xs">A senha deve ter no mínimo 8 caracteres</FieldDescription>
                                         <FieldError>
-                                            {errors?.password && <span>{errors.password.message}</span>}
+                                            {errors?.confirmPassword && <span>{errors.confirmPassword.message}</span>}
                                         </FieldError>
                                     </Field>
                                     <Button type="submit" className="w-full h-12 py-3 px-3.5 rounded-[8px] text-white bg-[#1F6F43] hover:bg-[#1a5f3a]" disabled={loading}>

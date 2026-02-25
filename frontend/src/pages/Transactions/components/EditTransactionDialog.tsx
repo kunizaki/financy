@@ -8,19 +8,21 @@ import {Input} from "@/components/ui/input.tsx"
 import {Label} from "@/components/ui/label.tsx"
 import {Button} from "@/components/ui/button.tsx"
 import {useMutation, useQuery} from "@apollo/client/react"
-import {CREATE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts"
 import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts"
 import {toast} from "sonner"
 import {getErrorMessage} from "@/lib/utils.ts"
 
 import {ArrowDownCircle, ArrowUpCircle, X} from "lucide-react"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx"
-import {Category, TransactionType} from "@/types"
+import {Category, Transaction, TransactionType} from "@/types"
+import {UPDATE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts";
+import {useEffect} from "react";
 
-interface CreateTransactionDialogProps {
+interface EditTransactionDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onCreated?: () => void
+    transaction: Transaction
+    onEdited?: () => void
 }
 
 const transactionValidationSchema = z.object({
@@ -33,16 +35,18 @@ const transactionValidationSchema = z.object({
 
 type TransactionFormData = z.infer<typeof transactionValidationSchema>
 
-export function CreateTransactionDialog({
+export function EditTransactionDialog({
                                             open,
                                             onOpenChange,
-                                            onCreated,
-                                        }: CreateTransactionDialogProps) {
+                                            transaction,
+                                            onEdited,
+                                        }: EditTransactionDialogProps) {
 
     const {
         register,
         handleSubmit,
         reset,
+        setValue,
         control,
         formState: { errors },
     } = useForm<TransactionFormData>({
@@ -59,21 +63,22 @@ export function CreateTransactionDialog({
     const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES);
     const categories = categoriesData?.listCategories || [];
 
-    const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
+    const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION, {
         onCompleted() {
-            toast.success("Transação criada com sucesso")
+            toast.success("Transação atualizada com sucesso")
             reset()
             onOpenChange(false)
-            onCreated?.()
+            onEdited?.()
         },
         onError(error) {
             toast.error(getErrorMessage(error))
         },
     })
 
-    const createTransactionSubmit: SubmitHandler<TransactionFormData> = (formData) => {
-        return createTransaction({
+    const updateTransactionSubmit: SubmitHandler<TransactionFormData> = (formData) => {
+        return updateTransaction({
             variables: {
+                id: transaction.id,
                 data: formData,
             },
         })
@@ -84,17 +89,28 @@ export function CreateTransactionDialog({
         onOpenChange(false)
     }
 
+    useEffect(() => {
+        if (transaction) {
+            setValue('transactionType', transaction.transactionType)
+            setValue('description', transaction.description)
+            setValue('value', transaction.value)
+            setValue('date', transaction.date)
+            setValue('categoryId', transaction.category.id)
+        }
+
+    }, [transaction]);
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md bg-white">
                 <DialogHeader className="flex flex-row items-center justify-between">
                     <DialogTitle className="text-2xl font-bold">
-                        Nova transação
+                        Editar transação
                     </DialogTitle>
                     <X className="w-6 h-6 cursor-pointer" onClick={handleCancel} />
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(createTransactionSubmit)} className="space-y-4 mt-4">
+                <form onSubmit={handleSubmit(updateTransactionSubmit)} className="space-y-4 mt-4">
                     <div className="flex flex-col gap-2">
                         <Label>Tipo de transação</Label>
                         <Controller

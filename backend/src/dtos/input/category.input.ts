@@ -4,7 +4,7 @@ import { IsHexColor, IsOptional, MinLength } from 'class-validator'
 @InputType()
 export class CreateCategoryInput {
   @Field(() => String)
-  @MinLength(5, { message: 'O título deve ter no mínimo 5 caracteres' })
+  @MinLength(3, { message: 'O título deve ter no mínimo 3 caracteres' })
   title!: string
 
   @Field(() => String, { nullable: true })
@@ -23,7 +23,7 @@ export class CreateCategoryInput {
 @InputType()
 export class UpdateCategoryInput {
   @Field(() => String)
-  @MinLength(5, { message: 'O título deve ter no mínimo 5 caracteres' })
+  @MinLength(3, { message: 'O título deve ter no mínimo 3 caracteres' })
   title!: string
 
   @Field(() => String, { nullable: true })

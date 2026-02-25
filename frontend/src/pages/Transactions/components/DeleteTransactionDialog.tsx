@@ -3,40 +3,40 @@ import {toast} from "sonner"
 import {getErrorMessage} from "@/lib/utils.ts"
 import {Button} from "@/components/ui/button.tsx"
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from "@/components/ui/dialog.tsx"
-import {Category} from "@/types";
-import {DELETE_CATEGORY} from "@/lib/graphql/mutations/Categories.ts";
-import {LIST_CATEGORIES} from "@/lib/graphql/queries/Categories.ts";
+import {Transaction} from "@/types";
+import {DELETE_TRANSACTION} from "@/lib/graphql/mutations/Transactions.ts";
+import {LIST_TRANSACTIONS} from "@/lib/graphql/queries/Transactions.ts";
 
-interface DeleteCategoryDialogProps {
+interface DeleteTransactionDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    category: Category | null
+    transaction: Transaction | null
     onDeleted?: () => void
 }
 
-export function DeleteCategoryDialog({
+export function DeleteTransactionDialog({
                                        open,
                                        onOpenChange,
-                                       category,
+                                       transaction,
                                          onDeleted,
-                                   }: DeleteCategoryDialogProps) {
-    const [deleteCategoryMutation, { loading }] = useMutation(DELETE_CATEGORY, {
+                                   }: DeleteTransactionDialogProps) {
+    const [deleteTransactionMutation, { loading }] = useMutation(DELETE_TRANSACTION, {
         onCompleted: () => {
-            toast.success("Categoria removida com sucesso")
+            toast.success("Transação removida com sucesso")
             onOpenChange(false)
             onDeleted?.()
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))
         },
-        refetchQueries: [LIST_CATEGORIES],
+        refetchQueries: [LIST_TRANSACTIONS],
     })
 
-    const handleDeleteCategory = async () => {
-        if (!category) return
-        await deleteCategoryMutation({
+    const handleDeleteTransaction = async () => {
+        if (!transaction) return
+        await deleteTransactionMutation({
             variables: {
-                id: category.id,
+                id: transaction.id,
             },
         })
     }
@@ -45,11 +45,11 @@ export function DeleteCategoryDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="bg-white">
                 <DialogHeader>
-                    <DialogTitle>Exclusão de Categoria</DialogTitle>
+                    <DialogTitle>Exclusão de Transação</DialogTitle>
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
                     Tem certeza que deseja remover
-                    <span className="font-bold"> {category?.description}</span>?
+                    <span className="font-bold"> {transaction?.description}</span>?
                 </p>
                 <p className="text-sm text-muted-foreground">
                     Essa ação não poderá ser desfeita.
@@ -60,7 +60,7 @@ export function DeleteCategoryDialog({
                     </Button>
                     <Button
                         variant="destructive"
-                        onClick={handleDeleteCategory}
+                        onClick={handleDeleteTransaction}
                         disabled={loading}
                         className="bg-red-800 hover:bg-red-700 text-white"
                     >

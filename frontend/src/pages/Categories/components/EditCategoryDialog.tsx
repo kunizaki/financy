@@ -8,6 +8,7 @@ import {Button} from "@/components/ui/button.tsx"
 import {useMutation} from "@apollo/client/react"
 import {UPDATE_CATEGORY} from "@/lib/graphql/mutations/Categories.ts"
 import {toast} from "sonner"
+import {getErrorMessage} from "@/lib/utils.ts"
 
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field.tsx";
 import {InputGroup, InputGroupInput} from "@/components/ui/input-group.tsx"
@@ -81,8 +82,8 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
             onOpenChange(false)
             onUpdated?.()
         },
-        onError() {
-            toast.error("Falha ao atualizar a categoria")
+        onError(error) {
+            toast.error(getErrorMessage(error))
         },
     })
 

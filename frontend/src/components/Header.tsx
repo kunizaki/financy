@@ -1,12 +1,12 @@
-import { Link, useLocation } from "react-router-dom"
-import { useAuthStore } from "../stores/auth"
+import {Link, useLocation} from "react-router-dom"
+import {useAuthStore} from "../stores/auth"
 import logo from "../assets/logo.svg"
-import { Avatar, AvatarFallback } from "./ui/avatar"
+import {Avatar, AvatarFallback} from "./ui/avatar"
 
 export function Header() {
     const { user, isAuthenticated } = useAuthStore()
     const location = useLocation()
-    const isDashboardPage = location.pathname === "/dashboard"
+    const isDashboardPage = location.pathname === "/"
     const isTransactionsPage = location.pathname === "/transactions"
     const isCategoriesPage = location.pathname === "/categories"
 
@@ -19,7 +19,7 @@ export function Header() {
                             {isDashboardPage ? (
                                 <span className="font-bold text-sm">Dashboard</span>
                             ) : (
-                                <Link to="/dashboard">
+                                <Link to="/">
                                     <span
                                         className="font-light text-sm"
                                     >

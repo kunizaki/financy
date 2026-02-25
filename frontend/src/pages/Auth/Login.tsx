@@ -1,25 +1,20 @@
-import { useState } from "react"
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuthStore } from "@/stores/auth"
-import { useForm } from "react-hook-form"
+import {useState} from "react"
+import {zodResolver} from '@hookform/resolvers/zod'
+import {useAuthStore} from "@/stores/auth"
+import {useForm} from "react-hook-form"
 import {Link, useNavigate} from "react-router-dom"
-import { toast } from "sonner"
-import { z } from "zod"
+import {toast} from "sonner"
+import {z} from "zod"
+import {getErrorMessage} from "@/lib/utils.ts"
 
 import logo from "@/assets/logo.svg"
-import { LucideMail, LucideLock, UserPlus2, Eye, EyeOff } from "lucide-react"
+import {Eye, EyeOff, LucideLock, LucideMail, UserPlus2} from "lucide-react"
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator, FieldSet } from "@/components/ui/field";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group.tsx";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
+import {Field, FieldError, FieldGroup, FieldLabel, FieldSeparator, FieldSet} from "@/components/ui/field";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Button} from "@/components/ui/button"
+import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
 
 const loginValidationSchema = z.object({
     email: z.email({ message: 'Email inválido' }),
@@ -62,7 +57,7 @@ export function Login() {
             }
         } catch (error) {
             console.error(error)
-            toast.error("Falha ao realizar o login!")
+            toast.error(getErrorMessage(error))
         } finally {
             setLoading(false)
         }
