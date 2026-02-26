@@ -11,10 +11,10 @@ import logo from "@/assets/logo.svg"
 import {Eye, EyeOff, LucideLock, LucideMail, UserPlus2} from "lucide-react"
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
-import {Field, FieldError, FieldGroup, FieldLabel, FieldSeparator, FieldSet} from "@/components/ui/field";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Button} from "@/components/ui/button"
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
+import {Label} from "@/components/ui/label.tsx";
 
 const loginValidationSchema = z.object({
     email: z.email({ message: 'Email inválido' }),
@@ -77,87 +77,71 @@ export function Login() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(loginSubmit)} className="space-y-4">
-                        <FieldGroup>
-                            <FieldSet>
-                                <FieldGroup className="flex flex-col gap-4">
-                                    <Field className="gap-2">
-                                        <FieldLabel htmlFor="email" className="text-sm text-gray-700">
-                                            E-mail
-                                        </FieldLabel>
-                                        <InputGroup className="px-3 py-3.5 rounded-[8px] border-gray-300 ">
-                                            <InputGroupAddon>
-                                                <LucideMail className="text-gray-500" />
-                                            </InputGroupAddon>
-                                            <InputGroupInput
-                                                id="email"
-                                                type="email"
-                                                placeholder="mail@example.com"
-                                                {...register('email', { required: true })}
-                                                className="px-3 py-3.5 text-gray-500"
-                                            />
-                                        </InputGroup>
-                                        <FieldError>
-                                            {errors?.email && <span>{errors.email.message}</span>}
-                                        </FieldError>
-                                    </Field>
-                                    <Field className="gap-2">
-                                        <FieldLabel htmlFor="password" className="text-sm text-gray-700">
-                                            Senha
-                                        </FieldLabel>
-                                        <InputGroup className="px-3 py-3.5 rounded-[8px] border-gray-300 ">
-                                            <InputGroupAddon>
-                                                <LucideLock className="text-gray-500" />
-                                            </InputGroupAddon>
-                                            <InputGroupInput
-                                                id="password"
-                                                type={ visiblePassword ? "text" : "password" }
-                                                placeholder="Digite sua senha"
-                                                {...register('password', { required: true })}
-                                                className="px-3 py-3.5 text-gray-500"
-                                            />
-                                            <InputGroupAddon align="inline-end">
-                                                {visiblePassword ? (
-                                                    <Eye className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(false)} />
-                                                ) : (
-                                                    <EyeOff className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(true)} />
-                                                )}
-                                            </InputGroupAddon>
-                                        </InputGroup>
-                                        <FieldError>
-                                            {errors?.password && <span>{errors.password.message}</span>}
-                                        </FieldError>
-                                    </Field>
-                                    <Field orientation="horizontal" className="flex flex-row content-between w-full">
-                                        <FieldGroup>
-                                            <Field orientation="horizontal">
-                                                <Checkbox
-                                                    id="rememberMe"
-                                                    {...register('remember')}
-                                                    className="w-4 h-4 border-gray-500" aria-label="Lembrar-me"
-                                                />
-                                                <FieldLabel htmlFor="rememberMe" className="text-gray-500">
-                                                    Lembrar-me
-                                                </FieldLabel>
-                                            </Field>
-                                        </FieldGroup>
-                                        <Link to="/forgot-password" className="w-auto text-nowrap text-sm text-gray-500">Recuperar senha</Link>
-                                    </Field>
-                                    <Button type="submit" className="w-full h-12 py-3 px-3.5 rounded-[8px] text-white bg-[#1F6F43] hover:bg-[#1a5f3a]" disabled={loading}>
-                                        Entrar
-                                    </Button>
-                                </FieldGroup>
-                            </FieldSet>
-                            <div className="flex flex-row justify-between">
-                                <div className="flex-1 border-b border-gray-500 mb-2.5" />
-                                <p className="mx-2 text-gray-500 text-md">ou</p>
-                                <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                        <div className="space-y-1">
+                            <Label htmlFor="email">E-mail</Label>
+                            <InputGroup className="py-3.5 rounded-[8px] border-gray-300 ">
+                                <InputGroupAddon>
+                                    <LucideMail className="text-gray-500" />
+                                </InputGroupAddon>
+                                <InputGroupInput
+                                    id="email"
+                                    type="email"
+                                    placeholder="mail@example.com"
+                                    {...register('email', { required: true })}
+                                    className="px-3 py-3.5 text-gray-500"
+                                />
+                            </InputGroup>
+                            {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="password">Senha</Label>
+                            <InputGroup className="py-3.5 rounded-[8px] border-gray-300 ">
+                                <InputGroupAddon>
+                                    <LucideLock className="text-gray-500" />
+                                </InputGroupAddon>
+                                <InputGroupInput
+                                    id="password"
+                                    type={ visiblePassword ? "text" : "password" }
+                                    placeholder="Digite sua senha"
+                                    {...register('password', { required: true })}
+                                    className="px-3 py-3.5 text-gray-500"
+                                />
+                                <InputGroupAddon align="inline-end">
+                                    {visiblePassword ? (
+                                        <Eye className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(false)} />
+                                    ) : (
+                                        <EyeOff className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(true)} />
+                                    )}
+                                </InputGroupAddon>
+                                {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
+                            </InputGroup>
+                        </div>
+                        <div className="flex justify-between space-y-1">
+                            <div className="flex flex-row gap-2 items-center">
+                                <Checkbox
+                                    id="rememberMe"
+                                    {...register('remember')}
+                                    className="w-4 h-4 border-gray-500" aria-label="Lembrar-me"
+                                />
+                                <span className="text-gray-500">
+                                    Lembrar-me
+                                </span>
                             </div>
-                            <FieldSeparator className="text-gray-600">Ainda não tem conta?</FieldSeparator>
-                            <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]" onClick={() => navigate("/signup")}>
-                                <UserPlus2 className="w-5 h-5" />
-                                <span className="text-sm"> Criar conta </span>
-                            </Button>
-                        </FieldGroup>
+                            <Link to="/forgot-password" className="w-auto text-nowrap text-sm text-gray-500">Recuperar senha</Link>
+                        </div>
+                        <Button type="submit" className="w-full h-12 py-3 px-3.5 rounded-[8px] text-white bg-[#1F6F43] hover:bg-[#1a5f3a]" disabled={loading}>
+                            Entrar
+                        </Button>
+                        <div className="flex flex-row justify-between">
+                            <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                            <p className="mx-2 text-gray-500 text-md">ou</p>
+                            <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                        </div>
+                        <span className="flex justify-center text-gray-600">Ainda não tem conta?</span>
+                        <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]" onClick={() => navigate("/signup")}>
+                            <UserPlus2 className="w-5 h-5" />
+                            <span className="text-sm"> Criar conta </span>
+                        </Button>
                     </form>
                 </CardContent>
             </Card>
