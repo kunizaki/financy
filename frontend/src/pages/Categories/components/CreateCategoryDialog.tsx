@@ -65,6 +65,7 @@ export function CreateCategoryDialog({
         register,
         handleSubmit,
         watch,
+        reset,
         formState: { errors },
     } = useForm<CategoryFormData>({
         resolver: zodResolver(categoryValidationSchema),
@@ -84,9 +85,10 @@ export function CreateCategoryDialog({
         onCompleted() {
             toast.success("Categoria criada com sucesso")
             onOpenChange(false)
+            reset()
             onCreated?.()
         },
-        onError(error) {
+        onError(error: unknown) {
             toast.error(getErrorMessage(error))
         },
     })

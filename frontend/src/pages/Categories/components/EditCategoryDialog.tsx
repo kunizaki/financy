@@ -64,6 +64,7 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
         watch,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<CategoryFormData>({
         resolver: zodResolver(categoryValidationSchema),
@@ -83,9 +84,10 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
         onCompleted() {
             toast.success("Categoria atualizada com sucesso")
             onOpenChange(false)
+            reset()
             onUpdated?.()
         },
-        onError(error) {
+        onError(error: unknown) {
             toast.error(getErrorMessage(error))
         },
     })

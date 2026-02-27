@@ -69,11 +69,11 @@ export function CreateTransactionDialog({
     const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
         onCompleted() {
             toast.success("Transação criada com sucesso")
-            reset()
             onOpenChange(false)
+            reset()
             onCreated?.()
         },
-        onError(error) {
+        onError(error: unknown) {
             toast.error(getErrorMessage(error))
         },
     })

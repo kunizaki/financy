@@ -67,8 +67,8 @@ export function EditTransactionDialog({
     const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION, {
         onCompleted() {
             toast.success("Transação atualizada com sucesso")
-            reset()
             onOpenChange(false)
+            reset()
             onEdited?.()
         },
         onError(error) {
