@@ -96,6 +96,10 @@ export function EditTransactionDialog({
 
     }, [transaction]);
 
+    useEffect(() => {
+        reset()
+    }, [open])
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent

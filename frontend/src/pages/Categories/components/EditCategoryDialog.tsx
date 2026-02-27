@@ -116,6 +116,9 @@ export function EditCategoryDialog({ open, onOpenChange, category, onUpdated }: 
         }
     }, [category]);
 
+    useEffect(() => {
+        reset()
+    }, [open])
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent

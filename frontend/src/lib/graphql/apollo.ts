@@ -19,19 +19,34 @@ const authLink = new SetContextLink((prevContext) => {
     };
 });
 
+// Evita múltiplos logouts/redirecionamentos em sequência
+let alreadyHandlingAuthError = false
+
+const isLoginPage = () => {
+    return window.location.pathname === "/login"
+}
+
+const handleUnauthenticated = () => {
+    if (alreadyHandlingAuthError) return
+    if (isLoginPage()) return
+
+    alreadyHandlingAuthError = true
+    useAuthStore.getState().logout()
+    window.location.href = "/login"
+}
+
 const errorLink = new ErrorLink(({ error }) => {
     if (CombinedGraphQLErrors.is(error)) {
         for (const err of error.errors) {
-            if (err.extensions?.code === 'UNAUTHENTICATED') {
-                useAuthStore.getState().logout()
-                window.location.href = '/login'
+            if (err.extensions?.code === "UNAUTHENTICATED") {
+                handleUnauthenticated()
+                return
             }
         }
     }
 
     if (ServerError.is(error) && error.statusCode === 401) {
-        useAuthStore.getState().logout()
-        window.location.href = '/login'
+        handleUnauthenticated()
     }
 })
 

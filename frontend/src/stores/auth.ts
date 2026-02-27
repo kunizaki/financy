@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthState>() (
                         return true
                     }
                     return false
-                }catch(error){
+                } catch(error) {
                     console.error("Erro ao fazer o login")
                     throw error
                 }
@@ -117,7 +117,6 @@ export const useAuthStore = create<AuthState>() (
             },
             updateUser: async (userUpdateInfos: UpdateUserInput) => {
                 const userInfos = get().user
-                console.log("user: ", userInfos)
                 const userId = userInfos?.id
                 if (!userId) {
                     throw new Error("Usuário não autenticado")
@@ -135,7 +134,6 @@ export const useAuthStore = create<AuthState>() (
                     })
                     if (data?.updateUser) {
                         const user = data.updateUser
-                        console.log("userUpdated: ", user)
                         set({
                             user: {
                                 id: user.id,

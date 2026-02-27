@@ -56,7 +56,6 @@ export function Login() {
                 toast.success("Login realizado com sucesso!")
             }
         } catch (error) {
-            console.error(error)
             toast.error(getErrorMessage(error))
         } finally {
             setLoading(false)

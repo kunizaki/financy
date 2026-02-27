@@ -1,3 +1,4 @@
+import {useEffect} from "react";
 import {z} from "zod"
 import {Controller, SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from '@hookform/resolvers/zod'
@@ -85,6 +86,10 @@ export function CreateTransactionDialog({
             },
         })
     }
+
+    useEffect(() => {
+        reset()
+    }, [open])
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -193,7 +198,7 @@ export function CreateTransactionDialog({
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger className={[
                                             errors.categoryId ? "border-red-500" : "border-gray-300",
-                                            "rounded text-gray-400"
+                                            "rounded text-gray-800"
                                         ].join(" ")}
                                     >
                                         <SelectValue placeholder="Selecione uma categoria" />
