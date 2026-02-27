@@ -1,4 +1,4 @@
-import type { IconName } from "lucide-react/dynamic"
+import type {IconName} from "lucide-react/dynamic"
 
 export interface User {
     id: string
@@ -13,6 +13,12 @@ export interface RegisterInput {
     name: string
     email: string
     password: string
+}
+
+export interface UpdateUserInput {
+    name: string
+    email: string
+    password?: string
 }
 
 

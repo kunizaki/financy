@@ -2,6 +2,7 @@ import { prismaClient } from '../lib/prisma/prisma'
 import { UpdateUserInput } from '../dtos/input/user.input'
 import { RegisterInput } from '../dtos/input/auth.input'
 import { GraphQLError } from 'graphql'
+import { hashPassword } from '../utils/hash'
 
 export class UserService {
   async createUser(data: RegisterInput) {
@@ -49,11 +50,15 @@ export class UserService {
         extensions: { code: 'NOT_FOUND' },
       })
 
+    const dataRequest = {
+      name: data?.name ?? undefined,
+      email: data?.email ?? undefined,
+      password: data?.password ? await hashPassword(data.password) : undefined,
+    }
+
     return prismaClient.user.update({
       where: { id },
-      data: {
-        name: data.name ?? undefined,
-      },
+      data: dataRequest,
     })
   }
 

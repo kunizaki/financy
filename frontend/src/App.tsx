@@ -1,11 +1,12 @@
-import { Navigate, Route, Routes } from "react-router-dom"
-import { useAuthStore } from "./stores/auth"
-import { Layout } from "@/components/Layout"
-import { Login } from "@/pages/Auth/Login"
-import { Signup } from "@/pages/Auth/Signup"
-import { Categories } from "@/pages/Categories";
-import { Dashboard } from "@/pages/Dashboard";
-import { Transactions } from "@/pages/Transactions";
+import {Navigate, Route, Routes} from "react-router-dom"
+import {useAuthStore} from "./stores/auth"
+import {Layout} from "@/components/Layout"
+import {Login} from "@/pages/Auth/Login"
+import {Signup} from "@/pages/Auth/Signup"
+import {Categories} from "@/pages/Categories";
+import {Dashboard} from "@/pages/Dashboard";
+import {Transactions} from "@/pages/Transactions";
+import {UpdateUser} from "@/pages/Auth/UpdateUser.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore()
@@ -35,6 +36,14 @@ function App() {
                         <PublicRoute>
                             <Signup />
                         </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <UpdateUser />
+                        </ProtectedRoute>
                     }
                 />
                 <Route

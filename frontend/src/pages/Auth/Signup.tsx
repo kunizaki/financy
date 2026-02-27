@@ -162,12 +162,12 @@ export function Signup() {
                                         <EyeOff className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(true)} />
                                     )}
                                 </InputGroupAddon>
-                                {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                             </InputGroup>
+                            {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="confirmPassword">Confirme a senha</Label>
-                            <InputGroup className="px-3 py-3.5 rounded-[8px] border-gray-300 ">
+                            <InputGroup className="py-3.5 rounded-[8px] border-gray-300 ">
                                 <InputGroupAddon>
                                     <LucideLock className="text-gray-500" />
                                 </InputGroupAddon>
@@ -193,16 +193,18 @@ export function Signup() {
                             Cadastrar
                         </Button>
                     </form>
-                    <div className="flex flex-row justify-between">
-                        <div className="flex-1 border-b border-gray-500 mb-2.5" />
-                        <p className="mx-2 text-gray-500 text-md">ou</p>
-                        <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                    <div className="flex flex-col gap-3 py-3">
+                        <div className="flex flex-row justify-between">
+                            <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                            <p className="mx-2 text-gray-500 text-md">ou</p>
+                            <div className="flex-1 border-b border-gray-500 mb-2.5" />
+                        </div>
+                        <span className="flex justify-center text-gray-600">Já tem conta?</span>
+                        <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]">
+                            <LucideLogIn className="w-5 h-5" />
+                            <Link to="/" className="text-sm">Fazer login</Link>
+                        </Button>
                     </div>
-                    <span className="flex justify-center text-gray-600">Já tem conta?</span>
-                    <Button variant="outline" className="flex flex-row w-full h-12 py-3 px-4 rounded-[8px]">
-                        <LucideLogIn className="w-5 h-5" />
-                        <Link to="/" className="text-sm">Fazer login</Link>
-                    </Button>
                 </CardContent>
             </Card>
         </div>

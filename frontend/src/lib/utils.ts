@@ -131,3 +131,29 @@ export function getErrorMessage(error: unknown): string {
     ? "Dados inválidos fornecidos"
     : defaultMessage
 }
+
+export function getInitials(fullName?: string): string {
+  if (!fullName) return "U"
+
+  const connectors = new Set([
+    "da", "de", "do", "das", "dos",
+    "e", // opcional (ex.: "Maria e Silva")
+  ])
+
+  const parts = fullName
+      .trim()
+      .split(/\s+/g)
+      .filter(Boolean)
+
+  if (parts.length === 0) return "U"
+
+  const first = parts[0]
+  const lastMeaningful =
+      [...parts].reverse().find((p) => !connectors.has(p.toLowerCase())) ?? parts[parts.length - 1]
+
+  const firstInitial = first[0]?.toUpperCase() ?? ""
+  const lastInitial = lastMeaningful[0]?.toUpperCase() ?? ""
+
+  // Se só tiver 1 palavra (ex.: "João"), vai retornar "J"
+  return first === lastMeaningful ? firstInitial : `${firstInitial}${lastInitial}`
+}

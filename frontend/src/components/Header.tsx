@@ -1,10 +1,12 @@
-import {Link, useLocation} from "react-router-dom"
+import {Link, useLocation, useNavigate} from "react-router-dom"
 import {useAuthStore} from "../stores/auth"
 import logo from "../assets/logo.svg"
 import {Avatar, AvatarFallback} from "./ui/avatar"
+import {getInitials} from "@/lib/utils.ts";
 
 export function Header() {
     const { user, isAuthenticated } = useAuthStore()
+    const navigate = useNavigate()
     const location = useLocation()
     const isDashboardPage = location.pathname === "/"
     const isTransactionsPage = location.pathname === "/transactions"
@@ -50,9 +52,9 @@ export function Header() {
                                 </Link>
                             )}
                         </div>
-                        <Avatar>
+                        <Avatar onClick={() => navigate('/profile')} className="cursor-pointer">
                             <AvatarFallback className="bg-gray-300 text-primary-foreground">
-                                {user?.name?.charAt(0)}
+                                {getInitials(user?.name)}
                             </AvatarFallback>
                         </Avatar>
 

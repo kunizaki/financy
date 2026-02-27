@@ -1,9 +1,10 @@
 import {create} from "zustand"
 import {persist} from "zustand/middleware"
 import {apolloClient} from "@/lib/graphql/apollo"
-import type {LoginInput, RegisterInput, User} from '@/types'
+import {LoginInput, RegisterInput, UpdateUserInput, User} from '@/types'
 import {REGISTER} from '@/lib/graphql/mutations/Register'
 import {LOGIN} from '@/lib/graphql/mutations/Login'
+import {UPDATE_USER} from "@/lib/graphql/mutations/Users.ts";
 
 type RegisterMutationData = {
     register: {
@@ -11,6 +12,10 @@ type RegisterMutationData = {
         refreshToken: string
         user: User
     }
+}
+
+type UpdateUserMutationData = {
+    updateUser: User
 }
 
 type LoginMutationData = {
@@ -28,11 +33,12 @@ interface AuthState {
     signup: (data: RegisterInput) => Promise<boolean>
     login: (data: LoginInput) => Promise<boolean>
     logout: () => void
+    updateUser: (data: UpdateUserInput) => Promise<boolean>
 }
 
 export const useAuthStore = create<AuthState>() (
     persist(
-        (set) => ({
+        (set, get) => ({
             user: null,
             token: null,
             isAuthenticated: false,
@@ -106,6 +112,46 @@ export const useAuthStore = create<AuthState>() (
                     return false
                 }catch(error){
                     console.error("Erro ao fazer o cadastro")
+                    throw error
+                }
+            },
+            updateUser: async (userUpdateInfos: UpdateUserInput) => {
+                const userInfos = get().user
+                console.log("user: ", userInfos)
+                const userId = userInfos?.id
+                if (!userId) {
+                    throw new Error("Usuário não autenticado")
+                }
+                try {
+                    const { data } = await apolloClient.mutate<
+                        UpdateUserMutationData,
+                        { id: string; data: UpdateUserInput }
+                    >({
+                        mutation: UPDATE_USER,
+                        variables: {
+                            id: userId,
+                            data: userUpdateInfos
+                        }
+                    })
+                    if (data?.updateUser) {
+                        const user = data.updateUser
+                        console.log("userUpdated: ", user)
+                        set({
+                            user: {
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                createdAt: user.createdAt,
+                                updatedAt: user.updatedAt
+                            },
+                            token: get().token,
+                            isAuthenticated: true
+                        })
+                        return true
+                    }
+                    return false
+                } catch (error) {
+                    console.error("Erro ao atualizar cadastro")
                     throw error
                 }
             },

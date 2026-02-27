@@ -113,8 +113,8 @@ export function Login() {
                                         <EyeOff className="text-gray-500 cursor-pointer" onClick={() => setVisiblePassword(true)} />
                                     )}
                                 </InputGroupAddon>
-                                {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                             </InputGroup>
+                            {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                         </div>
                         <div className="flex justify-between space-y-1">
                             <div className="flex flex-row gap-2 items-center">
@@ -132,6 +132,8 @@ export function Login() {
                         <Button type="submit" className="w-full h-12 py-3 px-3.5 rounded-[8px] text-white bg-[#1F6F43] hover:bg-[#1a5f3a]" disabled={loading}>
                             Entrar
                         </Button>
+                    </form>
+                    <div className="flex flex-col gap-3 py-3">
                         <div className="flex flex-row justify-between">
                             <div className="flex-1 border-b border-gray-500 mb-2.5" />
                             <p className="mx-2 text-gray-500 text-md">ou</p>
@@ -142,7 +144,7 @@ export function Login() {
                             <UserPlus2 className="w-5 h-5" />
                             <span className="text-sm"> Criar conta </span>
                         </Button>
-                    </form>
+                    </div>
                 </CardContent>
             </Card>
         </div>
